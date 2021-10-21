@@ -2,9 +2,9 @@ import random
 import math
 
 
-def main():
+def tworz_instancje(wspolczynnik_obciazenia, nazwa_pliku_wyjsciowego):
+    print("Generowanie pliku " + nazwa_pliku_wyjsciowego + "...")
     liczba_zadan = 10000
-    wspolczynnik_obciazenia = 0.8
 
     rozmiary_zadan = []
     for _ in range(liczba_zadan):
@@ -30,10 +30,16 @@ def main():
 
     zadania.sort(key=lambda x: x[0])
 
-    f = open(file="../instancje/inst-01.txt", mode="w")
+    f = open(file=nazwa_pliku_wyjsciowego, mode="w")
     for zadanie in zadania:
         f.write(str(zadanie[0]) + ' ' + str(zadanie[1]) + '\n')
     f.close()
+
+
+def main():
+    for obciazenie_procentowo in range(50, 100, 5):
+        nazwa_pliku_wyjsciowego = "../instancje/inst-obc-" + str(obciazenie_procentowo) + ".txt"
+        tworz_instancje(obciazenie_procentowo / 100, nazwa_pliku_wyjsciowego)
 
 
 if __name__ == "__main__":

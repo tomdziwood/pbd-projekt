@@ -1,1 +1,2 @@
-gen-01;Ten generator tworzy instancje w opisany tutaj sposób.
+gen-test.py;Generator służący do tworzenia różnych instancji w celach testowych.
+gen-obc.py;Generator tworzy instancje o różnym stopniu obciążenia systemu przy zachowaniu stałego rozkładu rozmiaru zadań.

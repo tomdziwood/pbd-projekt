@@ -1,1 +1,2 @@
-inst-01;Ta instancja ma tyle zadań, takie są średnie czasy długości z takim rozkładem, takie są średnie czasy przedkładania z takim rozkładem.
+inst-test.txt;Instancja służąca do celów testowych, głównie do rozpoznania własności instancji o określonych parametrach.
+inst-obc-{x}.txt;Instancje o określonym procentowym obciążeniu systemu o wartości {x}. Zachowana zostaje określona stałej liczby zadań i ich rozmiar.
