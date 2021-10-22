@@ -7,7 +7,7 @@ def main():
     wspolczynnik_obciazenia = 0.8
     rozmiary_zadan = []
     for _ in range(liczba_zadan):
-        rozmiary_zadan.append(round(random.gammavariate(alpha=8, beta=1250)))
+        rozmiary_zadan.append(round(random.gammavariate(alpha=8, beta=86)))
 
     sum_rozmiary_zadan = sum(rozmiary_zadan)
     max_czas_zakonczenia = math.ceil(sum_rozmiary_zadan / wspolczynnik_obciazenia)
