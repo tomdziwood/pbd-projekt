@@ -1,2 +1,0 @@
-inst-test.txt;Instancja służąca do celów testowych, głównie do rozpoznania własności instancji o określonych parametrach.
-inst-obc-{x}.txt;Instancje o określonym procentowym obciążeniu systemu o wartości {x}. Zachowana zostaje określona stałej liczby zadań i ich rozmiar.

@@ -1,3 +1,5 @@
+# Skrypt przeznaczony do zbadania charakterystyki rozmiarow i czasow przedkladania zadan dla podanej instancji.
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -6,7 +8,7 @@ import pandas as pd
 def main():
     liczba_zadan = 10000
     zadania = []
-    f = open(file="../instancje/inst-test.txt", mode="r")
+    f = open(file="../instancje/inst-obc-01-50.txt", mode="r")
     for _ in range(liczba_zadan):
         zadania.append(f.readline().split(' '))
     f.close()
@@ -40,12 +42,15 @@ def main():
 
     plt.subplot(2, 2, 1)
     plt.hist(np_momenty_gotowosci, bins=200)
+    plt.title("momenty gotowosci")
 
     plt.subplot(2, 2, 2)
     plt.hist(np_czasy_trwania, bins=200)
+    plt.title("czasy trwania")
 
     plt.subplot(2, 2, 3)
     plt.hist(np_czasy_miedzy_przedkladaniem, bins=200)
+    plt.title("czas do przedlozenia kolejnego zadania")
 
     plt.show()
 
