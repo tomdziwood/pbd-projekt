@@ -13,9 +13,13 @@ gen-obc-01.py
 
 ------------
 gen-obc-02.py
-	Generator tworzy instancje o różnym stopniu obciążenia systemu przy zachowaniu stałego rozkładu rozmiaru zadań. Nadal jeszcze brak kontroli nad zachowaniem określonego współczynnika zmienności czasów przedkładania, brak fazowości. Lista przyjętych wartości stałych:
+	Generator tworzy instancje o różnym stopniu obciążenia systemu przy zachowaniu stałego współczynnika zmienności rozmiaru zadań, stałego współczynnika zmienności czasów przedkładania oraz z określoną liczbą faz częstego-rzadkiego przedkładania zadań. Lista przyjętych wartości stałych:
 	 - oczekiwany sredni rozmiar wszystkich zadan dla instancji: ex_c = 1000
 	 - ulamek wskazujacy jaka czesc wszystkich zadan instancji stanowia zadania krotkie: p = 0.95
-	 - wspolczynnik zmiennosci rozmiarow zadan (odchylenie standardowe / wartosc srednia; dx_c / ex_c): w_c = 2
+	 - wspolczynnik zmiennosci rozmiarow zadan (odchylenie standardowe / wartosc srednia; dx_c / ex_c): w_c = 1.5
 	 - współczynnik określający stosunek wartości odchylenia standardowego do wartości oczekiwanej danego składowego rozkładu rozmiaru zadań (zarówno zadań krótkich jak i długich): w_de = 1 / 3
        Tutaj zmienny staje się współczynnik wskazujący ile razy większe są rozmiary długich zadań od zadań krótkich. Dla małego współczynnika zmienności rozmiarów zadań (w_c) zadania długie będą właściwie niewiele dłuższe od zadań krótkich. Dla dużego współczynnika w_c zadania długie będą z kolei znacznie dłuższe niż zadania krótkie. Współczynnik zmienności rozmiarów zadań w_c nie może być mniejszy niż współczynnik zmienności rozmiarów krótkich/długich zadań w_de. Współczynnik w_c dla coraz to większych wartości będzie wymagał krótkich zadań o coraz to mniejszym średnim rozmiarze wykraczając w wartości ujemne (ex_1 = 0 <=> wc = sqrt((p + w_de ^ 2) / (1 - p))).
+	
+	Stałe dotyczące czasów przedkładania:
+	 - wartosc wszpolczynnika zmiennosci czasow przedkladania zadan: w_t = 1
+	 - wspolczynnik wielokrotnosci wskazujacy ile razy wieksza jest srednia dlugich czasow przedkladania od sredniej krotkich czasow przedkladania: k_t = 2

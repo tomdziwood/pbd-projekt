@@ -2,8 +2,8 @@ import random
 import math
 
 
-def tworz_instancje(wspolczynnik_obciazenia, nazwa_pliku_wyjsciowego):
-    print("Generowanie pliku " + nazwa_pliku_wyjsciowego + "...")
+def tworz_instancje(wspolczynnik_obciazenia, liczba_faz, nazwa_pliku_wyjsciowego):
+    print("\nGenerowanie pliku " + nazwa_pliku_wyjsciowego + "...")
     liczba_zadan = 10000
 
     # rozmiary zadan wygenerowane przy uzyciu rozkladu Erlanga
@@ -44,6 +44,7 @@ def tworz_instancje(wspolczynnik_obciazenia, nazwa_pliku_wyjsciowego):
     beta_1 = ex_1 / alpha_1
     beta_2 = ex_2 / alpha_2
 
+    print("Parametry rozmiarow zadan:")
     print("ex_c={}\tdx_c={}".format(ex_c, dx_c))
     print("alpha_1={}\tbeta_1={}\tex_1={}\tdx_1={}".format(alpha_1, beta_1, ex_1, dx_1))
     print("alpha_2={}\tbeta_2={}\tex_2={}\tdx_2={}".format(alpha_2, beta_2, ex_2, dx_2))
@@ -54,22 +55,55 @@ def tworz_instancje(wspolczynnik_obciazenia, nazwa_pliku_wyjsciowego):
         else:
             rozmiary_zadan.append(round(random.gammavariate(alpha=alpha_2, beta=beta_2)))
 
-    suma_rozmiarow_zadan = sum(rozmiary_zadan)
-    max_czas_zakonczenia = math.ceil(suma_rozmiarow_zadan / wspolczynnik_obciazenia)
+    # definicja sredniej wartosci czasu przedkladania w oparciu o znany sredni rozmiar zadania i docelowe obciazenie
+    ex_t = ex_c / wspolczynnik_obciazenia
 
-    momenty_gotowosci = []
-    for i in range(liczba_zadan):
-        while True:
-            moment_gotowosci = random.randrange(max_czas_zakonczenia)
-            if moment_gotowosci + rozmiary_zadan[i] <= max_czas_zakonczenia:
-                momenty_gotowosci.append(moment_gotowosci)
-                break
+    # stala wartosc wszpolczynnika zmiennosci czasow przedkladania zadan
+    w_t = 1
+
+    # odchylenie standardowe czasu przedkladania zadan
+    dx_t = w_t * ex_t
+
+    # wspolczynnik wielokrotnosci wskazujacy ile razy wieksza jest srednia dlugich czasow przedkladania od sredniej krotkich czasow przedkladania
+    k_t = 2
+
+    # srednie krotkich (1) i dlugich (2) czasow przedkladania
+    ex_t1 = 2 * ex_t / (1 + k_t)
+    ex_t2 = k_t * ex_t1
+
+    # zalozenie jednakowego wspolczynnika zmiennosci zarowno dla krotkich jak i dlugich czasow przedkladania
+    # wowczas wspolczynnik ten dla wczesniejszych stalych przyjmuje wartosc okreslona ponizszym wzorem
+    w_t0 = ((2 * dx_t ** 2 - (ex_t1 - ex_t) ** 2 - (ex_t2 - ex_t) ** 2) / (ex_t1 ** 2 + ex_t2 ** 2)) ** 0.5
+
+    # odchylenia krotkich i dlugich czasow przedkladania
+    dx_t1 = w_t0 * ex_t1
+    dx_t2 = w_t0 * ex_t2
+
+    # ustalenie wspolczynnikow ksztaltu alfa i stosunku beta rozkladu gamma czasow przedkladania
+    # dla ktorych zachodza ustalone wartosci srednie i odchylenia czasow przedkladania
+    alpha_t1 = (1 / w_t0) ** 2
+    alpha_t2 = (1 / w_t0) ** 2
+
+    beta_t1 = ex_t1 / alpha_t1
+    beta_t2 = ex_t2 / alpha_t2
+
+    print("Parametry czasow przedkladania:")
+    print("ex_t={}\tdx_t={}".format(ex_t, dx_t))
+    print("alpha_t1={}\tbeta_t1={}\tex_t1={}\tdx_t1={}".format(alpha_t1, beta_t1, ex_t1, dx_t1))
+    print("alpha_t2={}\tbeta_t2={}\tex_t2={}\tdx_t2={}".format(alpha_t2, beta_t2, ex_t2, dx_t2))
+    print("dx_t? / ex_t? = w_t0 = {}".format(w_t0))
+
+    # generowanie kolejno momentow gotowosci dla kolejnych zadan
+    momenty_gotowosci = [0]
+    for i in range(1, liczba_zadan):
+        if (i // (liczba_zadan / (2 * liczba_faz))) % 2 == 0:
+            momenty_gotowosci.append(momenty_gotowosci[i - 1] + round(random.gammavariate(alpha=alpha_t1, beta=beta_t1)))
+        else:
+            momenty_gotowosci.append(momenty_gotowosci[i - 1] + round(random.gammavariate(alpha=alpha_t2, beta=beta_t2)))
 
     zadania = []
     for i in range(liczba_zadan):
         zadania.append([momenty_gotowosci[i], rozmiary_zadan[i]])
-
-    zadania.sort(key=lambda x: x[0])
 
     f = open(file=nazwa_pliku_wyjsciowego, mode="w")
     for zadanie in zadania:
@@ -78,9 +112,12 @@ def tworz_instancje(wspolczynnik_obciazenia, nazwa_pliku_wyjsciowego):
 
 
 def main():
+    liczby_faz = [1, 2, 5, 10, 20, 50, 100]
+
     for obciazenie_procentowo in range(50, 100, 5):
-        nazwa_pliku_wyjsciowego = "../instancje/inst-obc-02-" + str(obciazenie_procentowo) + ".txt"
-        tworz_instancje(obciazenie_procentowo / 100, nazwa_pliku_wyjsciowego)
+        for liczba_faz in liczby_faz:
+            nazwa_pliku_wyjsciowego = "../instancje/inst-obc-02-" + str(obciazenie_procentowo) + "-f" + str(liczba_faz) + ".txt"
+            tworz_instancje(obciazenie_procentowo / 100, liczba_faz, nazwa_pliku_wyjsciowego)
 
 
 if __name__ == "__main__":
