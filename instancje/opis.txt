@@ -1,11 +1,7 @@
 ------------
 inst-test.txt
-	Instancja służąca do celów testowych, głównie do rozpoznania własności instancji o określonych parametrach.
+	Instancja służąca do celów testowych, głównie do rozpoznania własności instancji o określonych parametrach. Instancja została wygenerowana przez generator "gen-test.py".
 
 ------------
-inst-obc-01-{x}.txt
-	Instancje o określonym procentowym obciążeniu systemu o wartości {x}. Instancje zostały wygenerowane przez generator "gen-obc-01.py".
-
-------------
-inst-obc-02-{x}-f{y}.txt
-	Instancje o określonym procentowym obciążeniu systemu o wartości {x} z liczbą faz przedkładań zadań {y}. Instancje zostały wygenerowane przez generator "gen-obc-02.py".
+inst-obc-{x}-f{y}.txt
+	Instancje o określonym procentowym obciążeniu systemu o wartości {x} z liczbą faz przedkładań zadań {y}. Instancje zostały wygenerowane przez generator "gen-obc.py".

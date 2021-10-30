@@ -8,7 +8,7 @@ import pandas as pd
 def main():
     liczba_zadan = 10000
     zadania = []
-    f = open(file="../instancje/inst-obc-02-90-f5.txt", mode="r")
+    f = open(file="../instancje/inst-obc-80-f2.txt", mode="r")
     for _ in range(liczba_zadan):
         zadania.append(f.readline().split(' '))
     f.close()
