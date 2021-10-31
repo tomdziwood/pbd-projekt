@@ -1,24 +1,32 @@
 ------------
-gen-test.py
+gen_test.py
 	Generator służący do tworzenia różnych instancji w celach testowych. Brak jakiejkolwiek określonej idei działania programu, generator działa według wymaganych aktualnie potrzeb.
 
 ------------
-gen-obc.py
-	Generator tworzy instancje o różnym stopniu obciążenia systemu przy zachowaniu stałego współczynnika zmienności rozmiaru zadań, stałego współczynnika zmienności czasów przedkładania oraz z określoną liczbą faz częstego-rzadkiego przedkładania zadań. Lista przyjętych wartości stałych:
+gen_inst.py
+	Skrypt udostępniający funkcje generowania instancji o podanych parametrach. Argumenty te to:
+	 - współczynnik obciążenia systemu: "wspolczynnik_obciazenia"
+	 - współczynnik zmienności czasów przedkładania zadań: "wspolczynnik_zmiennosci_przedkladania"
+	 - współczynnik zmienności rozmiarów zadań: "wspolczynnik_zmiennosci_rozmiaru"
+	 - liczba faz okresu częstego i rzadkiego przedkładania zadań: "liczba_faz"
+	 - nazwa pliku wyjściowego: "nazwa_pliku_wyjsciowego"
+	
+	Generator ponadto przyjmuje pewne ustalone wartości stałe:
 	 - oczekiwany sredni rozmiar wszystkich zadan dla instancji: ex_c = 1000
 	 - ulamek wskazujacy jaka czesc wszystkich zadan instancji stanowia zadania krotkie: p = 0.95
-	 - wspolczynnik zmiennosci rozmiarow zadan (odchylenie standardowe / wartosc srednia; dx_c / ex_c): w_c = 1.5
 	 - współczynnik określający stosunek wartości odchylenia standardowego do wartości oczekiwanej danego składowego rozkładu rozmiaru zadań (zarówno zadań krótkich jak i długich): w_de = 1 / 3
-       Tutaj zmienny staje się współczynnik wskazujący ile razy większe są rozmiary długich zadań od zadań krótkich. Dla małego współczynnika zmienności rozmiarów zadań (w_c) zadania długie będą właściwie niewiele dłuższe od zadań krótkich. Dla dużego współczynnika w_c zadania długie będą z kolei znacznie dłuższe niż zadania krótkie. Współczynnik zmienności rozmiarów zadań w_c nie może być mniejszy niż współczynnik zmienności rozmiarów krótkich/długich zadań w_de. Współczynnik w_c dla coraz to większych wartości będzie wymagał krótkich zadań o coraz to mniejszym średnim rozmiarze wykraczając w wartości ujemne (ex_1 = 0 <=> wc = sqrt((p + w_de ^ 2) / (1 - p))).
-	
-	Stałe dotyczące czasów przedkładania:
-	 - wartosc wszpolczynnika zmiennosci czasow przedkladania zadan: w_t = 1
 	 - wspolczynnik wielokrotnosci wskazujacy ile razy wieksza jest srednia dlugich czasow przedkladania od sredniej krotkich czasow przedkladania (w celu uzyskania fazowości): k_t = 2
+
+------------
+gen_obc.py
+	Generator tworzy instancje o różnym stopniu obciążenia systemu przy zachowaniu stałego współczynnika zmienności rozmiaru zadań, stałego współczynnika zmienności czasów przedkładania oraz z określoną liczbą faz częstego-rzadkiego przedkładania zadań. Generator korzysta z ogólnej funkcji generowania instancji zawartej w skrypcie "gen_inst.py". Lista przyjętych wartości stałych:
+	 - współczynnik zmienności czasów przedkładania zadań: w_t = 1
+	 - współczynnik zmienności rozmiarów zadań: w_c = 1.5
 	
 	
 	Wynik wywolania skryptu generującego:
 	
-	C:\Users\woodpecker\AppData\Local\Programs\Python\Python37\python.exe "C:/Users/woodpecker/Politechnika Poznańska/Semestr IX/Pracownia badawczo-problemowa/Laboratoria/pdb-projekt/generatory-instancji/gen-obc.py"
+	C:\Users\woodpecker\AppData\Local\Programs\Python\Python37\python.exe "C:/Users/woodpecker/Politechnika Poznańska/Semestr IX/Pracownia badawczo-problemowa/Laboratoria/pdb-projekt/generatory_instancji/gen_obc.py"
 
 	Generowanie pliku ../instancje/inst-obc-50-f1.txt...
 	Parametry rozmiarow zadan:

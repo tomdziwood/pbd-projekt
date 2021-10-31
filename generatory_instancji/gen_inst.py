@@ -1,8 +1,10 @@
 import random
 
 
-def tworz_instancje(wspolczynnik_obciazenia, liczba_faz, nazwa_pliku_wyjsciowego):
+def generuj_instancje(wspolczynnik_obciazenia, wspolczynnik_zmiennosci_przedkladania, wspolczynnik_zmiennosci_rozmiaru, liczba_faz, nazwa_pliku_wyjsciowego):
     print("\nGenerowanie pliku " + nazwa_pliku_wyjsciowego + "...")
+
+    # stala wartosc wskazujaca liczbe zadan do wykonania
     liczba_zadan = 10000
 
     # rozmiary zadan wygenerowane przy uzyciu rozkladu Erlanga
@@ -19,7 +21,7 @@ def tworz_instancje(wspolczynnik_obciazenia, liczba_faz, nazwa_pliku_wyjsciowego
     w_de = 1 / 3
 
     # wspolczynnik zmiennosci rozmiarow zadan (odchylenie standardowe / wartosc srednia; dx_c / ex_c)
-    w_c = 1.5
+    w_c = wspolczynnik_zmiennosci_rozmiaru
 
     # obliczanie charakterystyk rozkladow
 
@@ -57,8 +59,8 @@ def tworz_instancje(wspolczynnik_obciazenia, liczba_faz, nazwa_pliku_wyjsciowego
     # definicja sredniej wartosci czasu przedkladania w oparciu o znany sredni rozmiar zadania i docelowe obciazenie
     ex_t = ex_c / wspolczynnik_obciazenia
 
-    # stala wartosc wszpolczynnika zmiennosci czasow przedkladania zadan
-    w_t = 1
+    # wartosc wszpolczynnika zmiennosci czasow przedkladania zadan
+    w_t = wspolczynnik_zmiennosci_przedkladania
 
     # odchylenie standardowe czasu przedkladania zadan
     dx_t = w_t * ex_t
@@ -108,16 +110,3 @@ def tworz_instancje(wspolczynnik_obciazenia, liczba_faz, nazwa_pliku_wyjsciowego
     for zadanie in zadania:
         f.write(str(zadanie[0]) + ' ' + str(zadanie[1]) + '\n')
     f.close()
-
-
-def main():
-    liczby_faz = [1, 2, 5, 10, 20, 50, 100]
-
-    for obciazenie_procentowo in range(50, 100, 5):
-        for liczba_faz in liczby_faz:
-            nazwa_pliku_wyjsciowego = "../instancje/inst-obc-" + str(obciazenie_procentowo) + "-f" + str(liczba_faz) + ".txt"
-            tworz_instancje(obciazenie_procentowo / 100, liczba_faz, nazwa_pliku_wyjsciowego)
-
-
-if __name__ == "__main__":
-    main()
