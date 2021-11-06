@@ -10,11 +10,10 @@ import math
 
 
 def rysuj_charakterystyki_danej_instancji():
-    liczba_zadan = 10000
     zadania = []
-    f = open(file="../instancje/inst-obc-80-f2.txt", mode="r")
-    for _ in range(liczba_zadan):
-        zadania.append(f.readline().split(' '))
+    f = open(file="../instancje/inst-obc-0.80-c005.txt", mode="r")
+    for line in f:
+        zadania.append(line.split(' '))
     f.close()
 
     momenty_gotowosci_lista = []
@@ -59,16 +58,16 @@ def rysuj_charakterystyki_danej_instancji():
     plt.show()
 
 
-def wykryj_zbior_liczb_faz():
-    zbior_liczb_faz = set()
+def wykryj_zbior_liczb_cykli():
+    zbior_liczb_cykli = set()
 
     lista_nazw_instancji = os.listdir("../instancje")
-    wzorzec_liczby_faz = re.compile('.*f([0-9]*)\.txt')
+    wzorzec_liczby_cykli = re.compile('.*c([0-9]*)\.txt')
     for nazwa_instancji in lista_nazw_instancji:
-        wynik_dopasowania = wzorzec_liczby_faz.match(nazwa_instancji)
+        wynik_dopasowania = wzorzec_liczby_cykli.match(nazwa_instancji)
         if wynik_dopasowania is not None:
-            zbior_liczb_faz.add(int(wynik_dopasowania.group(1)))
-    return sorted(zbior_liczb_faz)
+            zbior_liczb_cykli.add(int(wynik_dopasowania.group(1)))
+    return sorted(zbior_liczb_cykli)
 
 
 def oblicz_wspolczynnik_obciazenia_instancji(nazwa_instancji):
@@ -95,31 +94,31 @@ def oblicz_wspolczynnik_obciazenia_instancji(nazwa_instancji):
 
 def rysuj_wykresy_wspolczynnika_obciazenia_systemu():
     print("Rysowanie wykresow wspolczynnika obciazenia systemu...")
-    zbior_liczb_faz = wykryj_zbior_liczb_faz()
+    zbior_liczb_cykli = wykryj_zbior_liczb_cykli()
     lista_nazw_instancji = os.listdir("../instancje")
-    index_liczba_faz = 1
+    index_liczba_cykli = 1
     ncols = 2
-    nrows = math.ceil(len(zbior_liczb_faz) / ncols)
+    nrows = math.ceil(len(zbior_liczb_cykli) / ncols)
     plt.rcParams["figure.figsize"] = (ncols * 10, nrows * 7)
     plt.suptitle("Wspolczynnik obciazenia systemu", fontsize=30, y=0.92)
-    for liczba_faz in zbior_liczb_faz:
-        wzorzec_inst_obc = re.compile('^inst-obc-[0-9]*-f' + str(liczba_faz) + '\.txt$')
+    for liczba_cykli in zbior_liczb_cykli:
+        wzorzec_inst_obc = re.compile('^inst-obc-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
         lista_nazw_inst_obc = list(filter(wzorzec_inst_obc.match, lista_nazw_instancji))
         wspolczynniki_obciazenia_inst_obc = [oblicz_wspolczynnik_obciazenia_instancji(x) for x in lista_nazw_inst_obc]
         print(wzorzec_inst_obc.pattern + "\t" + str(wspolczynniki_obciazenia_inst_obc))
 
-        wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9\.]*-f' + str(liczba_faz) + '\.txt$')
+        wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
         lista_nazw_inst_przedk = list(filter(wzorzec_inst_przedk.match, lista_nazw_instancji))
         wspolczynniki_obciazenia_inst_przedk = [oblicz_wspolczynnik_obciazenia_instancji(x) for x in lista_nazw_inst_przedk]
         print(wzorzec_inst_przedk.pattern + "\t" + str(wspolczynniki_obciazenia_inst_przedk))
 
-        wzorzec_inst_rozm = re.compile('^inst-rozm-[0-9\.]*-f' + str(liczba_faz) + '\.txt$')
+        wzorzec_inst_rozm = re.compile('^inst-rozm-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
         lista_nazw_inst_rozm = list(filter(wzorzec_inst_rozm.match, lista_nazw_instancji))
         wspolczynniki_obciazenia_inst_rozm = [oblicz_wspolczynnik_obciazenia_instancji(x) for x in lista_nazw_inst_rozm]
         print(wzorzec_inst_rozm.pattern + "\t" + str(wspolczynniki_obciazenia_inst_rozm))
 
-        plt.subplot(nrows, ncols, index_liczba_faz)
-        plt.title("Liczba faz: " + str(liczba_faz))
+        plt.subplot(nrows, ncols, index_liczba_cykli)
+        plt.title("Liczba cykli: " + str(liczba_cykli))
 
         ax1 = plt.gca()
         line_obc, = ax1.plot(wspolczynniki_obciazenia_inst_obc, color='blue', label='obc', marker='.')
@@ -137,7 +136,7 @@ def rysuj_wykresy_wspolczynnika_obciazenia_systemu():
 
         plt.legend(handles=[line_obc, line_przedk, line_rozm], loc="upper left")
 
-        index_liczba_faz += 1
+        index_liczba_cykli += 1
 
     plt.savefig("Wspolczynnik obciazenia systemu.png", dpi=300)
 
@@ -164,31 +163,31 @@ def oblicz_wspolczynnik_zmiennosci_czasow_przedkladania(nazwa_instancji):
 
 def rysuj_wykresy_wspolczynnika_zmiennosci_czasow_przedkladania():
     print("Rysowanie wykresow wspolczynnika zmiennosci czasow przedkladania...")
-    zbior_liczb_faz = wykryj_zbior_liczb_faz()
+    zbior_liczb_cykli = wykryj_zbior_liczb_cykli()
     lista_nazw_instancji = os.listdir("../instancje")
-    index_liczba_faz = 1
+    index_liczba_cykli = 1
     ncols = 2
-    nrows = math.ceil(len(zbior_liczb_faz) / ncols)
+    nrows = math.ceil(len(zbior_liczb_cykli) / ncols)
     plt.rcParams["figure.figsize"] = (ncols * 10, nrows * 7)
     plt.suptitle("Wspolczynnik zmiennosci czasow przedkladania", fontsize=30, y=0.92)
-    for liczba_faz in zbior_liczb_faz:
-        wzorzec_inst_obc = re.compile('^inst-obc-[0-9]*-f' + str(liczba_faz) + '\.txt$')
+    for liczba_cykli in zbior_liczb_cykli:
+        wzorzec_inst_obc = re.compile('^inst-obc-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
         lista_nazw_inst_obc = list(filter(wzorzec_inst_obc.match, lista_nazw_instancji))
         wspolczynniki_zmiennosci_czasow_przedkladania_inst_obc = [oblicz_wspolczynnik_zmiennosci_czasow_przedkladania(x) for x in lista_nazw_inst_obc]
         print(wzorzec_inst_obc.pattern + "\t" + str(wspolczynniki_zmiennosci_czasow_przedkladania_inst_obc))
 
-        wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9\.]*-f' + str(liczba_faz) + '\.txt$')
+        wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
         lista_nazw_inst_przedk = list(filter(wzorzec_inst_przedk.match, lista_nazw_instancji))
         wspolczynniki_zmiennosci_czasow_przedkladania_inst_przedk = [oblicz_wspolczynnik_zmiennosci_czasow_przedkladania(x) for x in lista_nazw_inst_przedk]
         print(wzorzec_inst_przedk.pattern + "\t" + str(wspolczynniki_zmiennosci_czasow_przedkladania_inst_przedk))
 
-        wzorzec_inst_rozm = re.compile('^inst-rozm-[0-9\.]*-f' + str(liczba_faz) + '\.txt$')
+        wzorzec_inst_rozm = re.compile('^inst-rozm-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
         lista_nazw_inst_rozm = list(filter(wzorzec_inst_rozm.match, lista_nazw_instancji))
         wspolczynniki_zmiennosci_czasow_przedkladania_inst_rozm = [oblicz_wspolczynnik_zmiennosci_czasow_przedkladania(x) for x in lista_nazw_inst_rozm]
         print(wzorzec_inst_rozm.pattern + "\t" + str(wspolczynniki_zmiennosci_czasow_przedkladania_inst_rozm))
 
-        plt.subplot(nrows, ncols, index_liczba_faz)
-        plt.title("Liczba faz: " + str(liczba_faz))
+        plt.subplot(nrows, ncols, index_liczba_cykli)
+        plt.title("Liczba cykli: " + str(liczba_cykli))
 
         ax1 = plt.gca()
         line_obc, = ax1.plot(wspolczynniki_zmiennosci_czasow_przedkladania_inst_obc, color='blue', label='obc', marker='.')
@@ -206,7 +205,7 @@ def rysuj_wykresy_wspolczynnika_zmiennosci_czasow_przedkladania():
 
         plt.legend(handles=[line_obc, line_przedk, line_rozm], loc="upper left")
 
-        index_liczba_faz += 1
+        index_liczba_cykli += 1
 
     plt.savefig("Wspolczynnik zmiennosci czasow przedkladania.png", dpi=300)
 
@@ -227,31 +226,31 @@ def oblicz_wspolczynnik_zmiennosci_rozmiarow(nazwa_instancji):
 
 def rysuj_wykresy_wspolczynnika_zmiennosci_rozmiarow():
     print("Rysowanie wykresow wspolczynnika zmiennosci czasow przedkladania...")
-    zbior_liczb_faz = wykryj_zbior_liczb_faz()
+    zbior_liczb_cykli = wykryj_zbior_liczb_cykli()
     lista_nazw_instancji = os.listdir("../instancje")
-    index_liczba_faz = 1
+    index_liczba_cykli = 1
     ncols = 2
-    nrows = math.ceil(len(zbior_liczb_faz) / ncols)
+    nrows = math.ceil(len(zbior_liczb_cykli) / ncols)
     plt.rcParams["figure.figsize"] = (ncols * 10, nrows * 7)
     plt.suptitle("Wspolczynnik zmiennosci rozmiarow", fontsize=30, y=0.92)
-    for liczba_faz in zbior_liczb_faz:
-        wzorzec_inst_obc = re.compile('^inst-obc-[0-9]*-f' + str(liczba_faz) + '\.txt$')
+    for liczba_cykli in zbior_liczb_cykli:
+        wzorzec_inst_obc = re.compile('^inst-obc-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
         lista_nazw_inst_obc = list(filter(wzorzec_inst_obc.match, lista_nazw_instancji))
         wspolczynniki_zmiennosci_rozmiarow_inst_obc = [oblicz_wspolczynnik_zmiennosci_rozmiarow(x) for x in lista_nazw_inst_obc]
         print(wzorzec_inst_obc.pattern + "\t" + str(wspolczynniki_zmiennosci_rozmiarow_inst_obc))
 
-        wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9\.]*-f' + str(liczba_faz) + '\.txt$')
+        wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
         lista_nazw_inst_przedk = list(filter(wzorzec_inst_przedk.match, lista_nazw_instancji))
         wspolczynniki_zmiennosci_rozmiarow_inst_przedk = [oblicz_wspolczynnik_zmiennosci_rozmiarow(x) for x in lista_nazw_inst_przedk]
         print(wzorzec_inst_przedk.pattern + "\t" + str(wspolczynniki_zmiennosci_rozmiarow_inst_przedk))
 
-        wzorzec_inst_rozm = re.compile('^inst-rozm-[0-9\.]*-f' + str(liczba_faz) + '\.txt$')
+        wzorzec_inst_rozm = re.compile('^inst-rozm-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
         lista_nazw_inst_rozm = list(filter(wzorzec_inst_rozm.match, lista_nazw_instancji))
         wspolczynniki_zmiennosci_rozmiarow_inst_rozm = [oblicz_wspolczynnik_zmiennosci_rozmiarow(x) for x in lista_nazw_inst_rozm]
         print(wzorzec_inst_rozm.pattern + "\t" + str(wspolczynniki_zmiennosci_rozmiarow_inst_rozm))
 
-        plt.subplot(nrows, ncols, index_liczba_faz)
-        plt.title("Liczba faz: " + str(liczba_faz))
+        plt.subplot(nrows, ncols, index_liczba_cykli)
+        plt.title("Liczba cykli: " + str(liczba_cykli))
 
         ax1 = plt.gca()
         line_obc, = ax1.plot(wspolczynniki_zmiennosci_rozmiarow_inst_obc, color='blue', label='obc', marker='.')
@@ -269,7 +268,7 @@ def rysuj_wykresy_wspolczynnika_zmiennosci_rozmiarow():
 
         plt.legend(handles=[line_obc, line_przedk, line_rozm], loc="upper left")
 
-        index_liczba_faz += 1
+        index_liczba_cykli += 1
 
     plt.savefig("Wspolczynnik zmiennosci rozmiarow.png", dpi=300)
 

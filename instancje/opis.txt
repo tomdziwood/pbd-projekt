@@ -3,5 +3,13 @@ inst-test.txt
 	Instancja służąca do celów testowych, głównie do rozpoznania własności instancji o określonych parametrach. Instancja została wygenerowana przez generator "gen-test.py".
 
 ------------
-inst-obc-{x}-f{y}.txt
-	Instancje o określonym procentowym obciążeniu systemu o wartości {x} z liczbą faz przedkładań zadań {y}. Instancje zostały wygenerowane przez generator "gen-obc.py".
+inst-obc-{x}-c{y}.txt
+	Instancje o określonym współczynniku obciążeniu systemu o wartości {x} z liczbą dwu-fazowych cykli przedkładań zadań {y}. Instancje zostały wygenerowane przez generator "gen-obc.py". Poprzez współczynnik obciążenia rozumie się stosunek średniej długości czasu przedkładania zadań do średniego rozmiaru przedkładanych zadań w danej instancji.
+
+------------
+inst-przedk-{x}-c{y}.txt
+	Instancje o określonym współczynniku zmienności czasów przedkładania zadań o wartości {x} z liczbą dwu-fazowych cykli przedkładań zadań {y}. Instancje zostały wygenerowane przez generator "gen-przedk.py". Poprzez współczynnik zmienności czasów przedkładania zadań rozumie się stosunek standardowego odchylenia do średniej zbioru czasów przedkładania zadań w danej instancji.
+
+------------
+inst-rozm-{x}-c{y}.txt
+	Instancje o określonym współczynniku zmienności rozmiarów zadań o wartości {x} z liczbą dwu-fazowych cykli przedkładań zadań {y}. Instancje zostały wygenerowane przez generator "gen-rozm.py". Poprzez współczynnik zmienności rozmiarów zadań rozumie się stosunek standardowego odchylenia do średniej zbioru rozmiarów zadań w danej instancji.
