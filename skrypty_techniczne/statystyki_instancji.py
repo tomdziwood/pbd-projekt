@@ -7,7 +7,6 @@ import pandas as pd
 import os
 import re
 import math
-from wasabi import color
 
 
 def rysuj_charakterystyki_danej_instancji():
