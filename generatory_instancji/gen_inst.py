@@ -1,11 +1,24 @@
 import random
 
 
-def generuj_instancje(wspolczynnik_obciazenia, wspolczynnik_zmiennosci_przedkladania, wspolczynnik_zmiennosci_rozmiaru, liczba_faz, nazwa_pliku_wyjsciowego):
-    print("\nGenerowanie pliku " + nazwa_pliku_wyjsciowego + "...")
+def generuj_ziarno_losowosci(wspolczynnik_obciazenia, wspolczynnik_zmiennosci_przedkladania, wspolczynnik_zmiennosci_rozmiaru, liczba_cykli):
+    ziarno_losowosci = wspolczynnik_obciazenia * 100
+    ziarno_losowosci *= 1000
+    ziarno_losowosci += wspolczynnik_zmiennosci_przedkladania * 100
+    ziarno_losowosci *= 1000
+    ziarno_losowosci += wspolczynnik_zmiennosci_rozmiaru * 100
+    ziarno_losowosci *= 100
+    ziarno_losowosci += liczba_cykli
+    return round(ziarno_losowosci)
+
+
+def generuj_instancje(wspolczynnik_obciazenia, wspolczynnik_zmiennosci_przedkladania, wspolczynnik_zmiennosci_rozmiaru, liczba_cykli, nazwa_pliku_wyjsciowego):
+    ziarno_losowosci = generuj_ziarno_losowosci(wspolczynnik_obciazenia, wspolczynnik_zmiennosci_przedkladania, wspolczynnik_zmiennosci_rozmiaru, liczba_cykli)
+    random.seed(ziarno_losowosci)
+    print("\nGenerowanie pliku " + nazwa_pliku_wyjsciowego + ", ziarno_losowosci=" + str(ziarno_losowosci))
 
     # stala wartosc wskazujaca liczbe zadan do wykonania
-    liczba_zadan = 10000
+    liczba_zadan = 100000
 
     # rozmiary zadan wygenerowane przy uzyciu rozkladu Erlanga
     # 95% zadan jest krotkich, a pozostale zadania to zadania dlugie
@@ -97,7 +110,7 @@ def generuj_instancje(wspolczynnik_obciazenia, wspolczynnik_zmiennosci_przedklad
     # generowanie kolejno momentow gotowosci dla kolejnych zadan
     momenty_gotowosci = [0]
     for i in range(1, liczba_zadan):
-        if (i // (liczba_zadan / (2 * liczba_faz))) % 2 == 0:
+        if (i // (liczba_zadan / (2 * liczba_cykli))) % 2 == 0:
             momenty_gotowosci.append(momenty_gotowosci[i - 1] + round(random.gammavariate(alpha=alpha_t1, beta=beta_t1)))
         else:
             momenty_gotowosci.append(momenty_gotowosci[i - 1] + round(random.gammavariate(alpha=alpha_t2, beta=beta_t2)))
