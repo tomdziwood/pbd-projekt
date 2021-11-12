@@ -130,3 +130,7 @@ dmypy.json
 
 # Ignore PyCharm project configuration
 .idea/
+
+
+# Ignorowanie plikow wyjsciowych zawierajacych liste uszeregowanych zadan dla danej maszyny
+uszeregowanie/szer-*-nodes-*.txt

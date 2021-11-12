@@ -1,0 +1,13 @@
+Podstawowy plik wynikowy zawiera trzy liczby w jednej lini oddzielone spacja:
+[sredni_czas_opoznienia] [sredni_czas_przetwarzania] [sredni_czas_odpowiedzi]
+
+Dodatkowy plik wynikowy (o nazwie "szer-*-nodes-*.txt), służący do weryfikacji poprawności uszeregowania na n węzłach, posiada ponadto n wierszy.
+Każdy z wierszy odpowiada i-temu wezłowi:
+ - pierwsza liczba w wierszu opisuje liczbę zadań przydzielonych do węzła
+ - pozostałe liczby w wierszu odpowiadają numerom kolejnych zadań przydzielanych do węzła (numeracja od 0)
+
+
+Nazwa pliku uszeregowania nawiązuje do programu szeregującego i szeregowanej instancji:
+ - "szer-test-*.txt" to wyniki uszeregowania wytworzone przez program szeregujący "szer_test.py"
+ - "szer-jnq-*.txt" to wyniki uszeregowania wytworzone przez program szeregujący "szer_jnq.py"
+ - "szer-jsq-*.txt" to wyniki uszeregowania wytworzone przez program szeregujący "szer_jsq.py"
