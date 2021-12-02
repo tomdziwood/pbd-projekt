@@ -42,7 +42,7 @@ def wykryj_zbior_wartosci_parametru(lista_nazw_uszeregowan):
     return sorted(zbior_wartosci_parametru)
 
 
-def rysuj_wykres(program_szeregujacy, parametr, liczba_cykli):
+def rysuj_wykres_porownania_liczby_wezlow(program_szeregujacy, parametr, liczba_cykli):
     print("Rysuje wykres:\tprogram_szeregujacy=\"%s\"\tparametr=\"%s\"\tliczba_cykli=%s" % (program_szeregujacy, parametr, liczba_cykli))
     lista_nazw_uszeregowan = os.listdir("../uszeregowanie")
     wzorzec_wykorzystywanych_uszeregowan = re.compile('^szer-' + program_szeregujacy + '-n[0-9]*-inst-' + parametr + '-[0-9.]*-c' + "%03d" % liczba_cykli + '\\.txt$')
@@ -83,7 +83,7 @@ def rysuj_wykres(program_szeregujacy, parametr, liczba_cykli):
     plt.show()
 
 
-def rysuj_wykresy(program_szeregujacy, parametr):
+def rysuj_wykresy_porownania_liczby_wezlow(program_szeregujacy, parametr):
     print("Rysuje wykres:\tprogram_szeregujacy=\"%s\"\tparametr=\"%s\"" % (program_szeregujacy, parametr))
     lista_nazw_uszeregowan = os.listdir("../uszeregowanie")
     wzorzec_wykorzystywanych_uszeregowan = re.compile('^szer-' + program_szeregujacy + '-n[0-9]*-inst-' + parametr + '-[0-9.]*-c[0-9]*\\.txt$')
@@ -100,9 +100,9 @@ def rysuj_wykresy(program_szeregujacy, parametr):
 
     index_liczba_cykli = 1
     ncols = len(zbior_liczb_cykli)
-    nrows = 1
+    nrows = 3
     plt.rcParams["figure.figsize"] = (ncols * 10, nrows * 7)
-    plt.suptitle("program_szeregujacy=\"%s\" | parametr=\"%s\"" % (program_szeregujacy, parametr), fontsize=30, y=0.92)
+    plt.suptitle("program_szeregujacy=\"%s\" | parametr=\"%s\"" % (program_szeregujacy, parametr), fontsize=30, y=0.95)
     for liczba_cykli in zbior_liczb_cykli:
         lista_list_czasow = []
         for liczba_wezlow in zbior_liczb_wezlow:
@@ -111,7 +111,6 @@ def rysuj_wykresy(program_szeregujacy, parametr):
             lista_czasow_z_dana_liczba_wezlow = []
             for uszeregowanie in lista_uszeregowan_z_dana_liczba_wezlow:
                 nazwa_pliku_wejsciowego = '../uszeregowanie/' + uszeregowanie
-                print(str(liczba_wezlow) + ":\t" + str(nazwa_pliku_wejsciowego))
                 f = open(file=nazwa_pliku_wejsciowego, mode="r")
                 [sredni_czas_opoznienia, sredni_czas_przetwarzania, sredni_czas_odpowiedzi] = [float(liczba) for liczba in f.readline().split(' ')]
                 lista_czasow_z_dana_liczba_wezlow.append(sredni_czas_odpowiedzi)
@@ -133,6 +132,48 @@ def rysuj_wykresy(program_szeregujacy, parametr):
             lista_czasow_z_dana_liczba_wezlow = lista_list_czasow[indeks]
             plt.plot(zbior_wartosci_parametru, lista_czasow_z_dana_liczba_wezlow, color=mapa_kolorow[indeks], label=str(liczba_wezlow))
         plt.legend(title="Liczba wezlow")
+        plt.xlabel("Wartosc parametru", fontsize=8)
+        plt.ylabel("Czas opoznienia", fontsize=8)
+
+        plt.subplot(nrows, ncols, ncols + index_liczba_cykli)
+        plt.title("liczba_cykli=%s" % liczba_cykli)
+        plt.yscale('log')
+        for indeks in range(len(zbior_liczb_wezlow)):
+            liczba_wezlow = zbior_liczb_wezlow[indeks]
+            lista_czasow_z_dana_liczba_wezlow = lista_list_czasow[indeks]
+            plt.plot(zbior_wartosci_parametru, lista_czasow_z_dana_liczba_wezlow, color=mapa_kolorow[indeks], label=str(liczba_wezlow))
+        plt.legend(title="Liczba wezlow")
+        plt.xlabel("Wartosc parametru", fontsize=8)
+        plt.ylabel("Czas opoznienia (skala logarytmiczna)", fontsize=8)
+
+        maksymalny_czas_opoznienia_dla_danej_wartosci_parametru = []
+        for i in range(len(zbior_wartosci_parametru)):
+            maksymalny_czas_opoznienia_dla_danej_wartosci_parametru.append(0)
+
+        for lista_czasow in lista_list_czasow:
+            for i in range(len(zbior_wartosci_parametru)):
+                if maksymalny_czas_opoznienia_dla_danej_wartosci_parametru[i] < lista_czasow[i]:
+                    maksymalny_czas_opoznienia_dla_danej_wartosci_parametru[i] = lista_czasow[i]
+
+        lista_wyskalowanych_list_czasow = []
+        for index_liczba_wezlow in range(len(zbior_liczb_wezlow)):
+            wyskalowana_lista_czasow = []
+            index_wartosc_parametru = 0
+            for czas_opoznienia in lista_list_czasow[index_liczba_wezlow]:
+                wyskalowana_lista_czasow.append(czas_opoznienia / maksymalny_czas_opoznienia_dla_danej_wartosci_parametru[index_wartosc_parametru])
+                index_wartosc_parametru += 1
+            lista_wyskalowanych_list_czasow.append(wyskalowana_lista_czasow)
+
+        plt.subplot(nrows, ncols, 2 * ncols + index_liczba_cykli)
+        plt.title("liczba_cykli=%s" % liczba_cykli)
+        for indeks in range(len(zbior_liczb_wezlow)):
+            liczba_wezlow = zbior_liczb_wezlow[indeks]
+            lista_wyskalowanych_czasow_z_dana_liczba_wezlow = lista_wyskalowanych_list_czasow[indeks]
+            plt.plot(zbior_wartosci_parametru, lista_wyskalowanych_czasow_z_dana_liczba_wezlow, color=mapa_kolorow[indeks], label=str(liczba_wezlow))
+        plt.legend(title="Liczba wezlow")
+        plt.xlabel("Wartosc parametru", fontsize=8)
+        plt.ylabel("Stosunek czasu opoznienia do maksymalnego czasu opoznienia dla danej wartosci parametru", fontsize=8)
+
 
         index_liczba_cykli += 1
 
@@ -140,8 +181,10 @@ def rysuj_wykresy(program_szeregujacy, parametr):
 
 
 def main():
-    # rysuj_wykres("jnq", "obc", 1)
-    rysuj_wykresy("jnq", "obc")
+    # rysuj_wykres_porownania_liczby_wezlow("jnq", "obc", 1)
+    rysuj_wykresy_porownania_liczby_wezlow("jnq", "obc")
+    # rysuj_wykresy_porownania_liczby_wezlow("jnq", "rozm")
+    # rysuj_wykresy_porownania_liczby_wezlow("jnq", "przedk")
 
 
 if __name__ == "__main__":
