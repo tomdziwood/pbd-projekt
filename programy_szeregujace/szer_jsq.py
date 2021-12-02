@@ -1,60 +1,52 @@
 import re
 import random
 import os
+from processor_sharing import Task, Node, least_busy
 
 
 def szereguj_instancje(nazwa_instancji, liczba_wezlow):
     print("\nSzeregowanie instancji " + nazwa_instancji + ", liczba_wezlow=" + str(liczba_wezlow))
     random.seed(0)
 
-    zadania = []
+    loaded_tasks: list[Task] = []
+    nodes: list[Node] = [Node() for _ in range( liczba_wezlow)]
+    cycle_counter: int = 0
+
     nazwa_pliku_wejsciowego = "../instancje/" + nazwa_instancji
-    f = open(file=nazwa_pliku_wejsciowego, mode="r")
-    for line in f:
-        zadania.append(line.split(' '))
-    f.close()
+
+    with open(file=nazwa_pliku_wejsciowego, mode="r") as file:
+        for idx, line in enumerate(file):
+            start, duration = line.split(' ')
+            loaded_tasks.append(Task(idx, int(start), int(duration)))
 
     nazwa_pliku_wyjsciowego = "../uszeregowanie/szer-jsq-n" + "%03d-" % liczba_wezlow + nazwa_instancji
     nazwa_pliku_wyjsciowego_nodes = "../uszeregowanie/szer-jsq-n" + "%03d-nodes-" % liczba_wezlow + nazwa_instancji
 
-    czas_wezlow = [0] * liczba_wezlow
-    zadania_wezlow = [[] for _ in range(liczba_wezlow)]
+    # compute
+    while sum(node.active_tasks for node in nodes) + len(loaded_tasks) > 0:
+        while loaded_tasks and loaded_tasks[0].start <= cycle_counter:  # assume sorted
+            least_busy(nodes).add_task(loaded_tasks.pop(0))
 
-    czas_opoznienia = []
-    czas_przetwarzania = []
-    czas_odpowiedzi = []
+        for node in nodes:
+            if node.active_tasks == 0:
+                continue
+            time_in_cycle = 1
+            compute_time = time_in_cycle / node.active_tasks
+            [task.add_compute_time(compute_time, cycle_counter) for task in
+             node.tasks]  # parts of time wasted
+            # opt: split rejected time
+            # remove done
+            node.mark_completed()
+        cycle_counter += 1
 
-    # TODO: Trzeba zrobic tutaj szeregowanie drugim sposobem tym z Processor Sharing
-    #  Ponizszy zakomentowany kod to jest przekopiowany z "szer_jnq.py"
-    #  (Ten wyzej kod tez jest przekopiowany, z drobna roznica przy nazwie plikow wyjsciowych.)
-    #  Schemat przechodzenia petla po kolejnym przychodzacym zadaniu zostaje pewnie ten sam,
-    #  ale no trzeba jakos odpowiednio zmienic obliczanie przydzielenia wezla i czasow zakonczenia.
-    #  Jakies dodatkowe listy do pamietania biezacych zadan na danym wezlie sie przydadza, itp, itd...
+    # results
+    all_tasks = []
+    for node in nodes:
+        all_tasks.extend(node.completed_tasks)
 
-    """
-    for indeks_zadania in range(len(zadania)):
-        zadanie = zadania[indeks_zadania]
-        moment_gotowosci = int(zadanie[0])
-        rozmiar_zadania = int(zadanie[1])
-
-        indeks_przydzielonego_wezla = czas_wezlow.index(min(czas_wezlow))
-        zadania_wezlow[indeks_przydzielonego_wezla].append(indeks_zadania)
-
-        if czas_wezlow[indeks_przydzielonego_wezla] > moment_gotowosci:
-            czas_rozpoczecia = czas_wezlow[indeks_przydzielonego_wezla]
-        else:
-            czas_rozpoczecia = moment_gotowosci
-
-        czas_ukonczenia = czas_rozpoczecia + rozmiar_zadania * liczba_wezlow
-        czas_wezlow[indeks_przydzielonego_wezla] = czas_ukonczenia
-
-        czas_opoznienia.append(czas_rozpoczecia - moment_gotowosci)
-        czas_przetwarzania.append(czas_ukonczenia - czas_rozpoczecia)
-        czas_odpowiedzi.append(czas_opoznienia[-1] + czas_przetwarzania[-1])
-
-    sredni_czas_opoznienia = sum(czas_opoznienia) / len(czas_opoznienia)
-    sredni_czas_przetwarzania = sum(czas_przetwarzania) / len(czas_przetwarzania)
-    sredni_czas_odpowiedzi = sum(czas_odpowiedzi) / len(czas_odpowiedzi)
+    sredni_czas_opoznienia = 0
+    sredni_czas_przetwarzania = sum(task.real_duration for task in all_tasks) / len(all_tasks)
+    sredni_czas_odpowiedzi = sredni_czas_przetwarzania
     print("sredni_czas_opoznienia=" + str(sredni_czas_opoznienia) + "\tsredni_czas_przetwarzania=" + str(sredni_czas_przetwarzania) + "\tsredni_czas_odpowiedzi=" + str(sredni_czas_odpowiedzi))
 
     f = open(file=nazwa_pliku_wyjsciowego, mode="w")
@@ -63,12 +55,11 @@ def szereguj_instancje(nazwa_instancji, liczba_wezlow):
 
     f = open(file=nazwa_pliku_wyjsciowego_nodes, mode="w")
     f.write("%.5f %.5f %.5f" % (sredni_czas_opoznienia, sredni_czas_przetwarzania, sredni_czas_odpowiedzi))
-    for zadania_wezla in zadania_wezlow:
-        f.write("\n%d" % len(zadania_wezla))
-        for zadanie_wezla in zadania_wezla:
-            f.write(" %d" % zadanie_wezla)
+    for node in nodes:
+        f.write("\n%d" % len(node.completed_tasks))
+        for task in node.completed_tasks:
+            f.write(" %d" % task.id)
     f.close()
-    """
 
 
 def main():
