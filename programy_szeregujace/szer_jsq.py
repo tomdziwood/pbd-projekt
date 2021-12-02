@@ -34,8 +34,6 @@ def szereguj_instancje(nazwa_instancji, liczba_wezlow):
             compute_time = time_in_cycle / node.active_tasks
             [task.add_compute_time(compute_time, cycle_counter) for task in
              node.tasks]  # parts of time wasted
-            # opt: split rejected time
-            # remove done
             node.mark_completed()
         cycle_counter += 1
 

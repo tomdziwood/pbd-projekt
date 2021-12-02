@@ -1,12 +1,7 @@
 from random import choice
-from typing import Iterable, Optional
+from typing import Optional
 
 
-# load data to task
-# init node list
-
-
-# def node, def task
 class Task:
 
     def __init__(self, id: int, start_time: int, duration: int, progress: int = 0) -> None:
@@ -70,34 +65,3 @@ def least_busy(nodes: list[Node]) -> Node:
             wining_nodes.append(node)
 
     return choice(wining_nodes)
-
-
-if __name__ == '__main__':
-
-    loaded_tasks: list[Task] = [Task(1, 0, 10), Task(1, 5, 5), Task(1, 20, 10)]
-    nodes: list[Node] = [Node()]
-    cycle_counter: int = 0
-
-    # while task in todo
-    while sum(node.active_tasks for node in nodes) + len(loaded_tasks) > 0:
-        # i add to active
-
-        while loaded_tasks and loaded_tasks[0].start <= cycle_counter:  # assume sorted
-            least_busy(nodes).add_task(loaded_tasks.pop(0))
-
-        for node in nodes:
-            if node.active_tasks == 0:
-                continue
-            # offer time
-            # other optional implementations
-            time_in_cycle = 1
-            compute_time = time_in_cycle / node.active_tasks
-            [task.add_compute_time(compute_time, cycle_counter) for task in
-             node.tasks]  # parts of time wasted
-            # opt: split rejected time
-            # remove done
-            node.mark_completed()
-        cycle_counter += 1
-
-    print(cycle_counter)
-    print(nodes[0].completed_tasks)
