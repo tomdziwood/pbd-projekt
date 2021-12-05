@@ -20,6 +20,7 @@ def szereguj_instancje(nazwa_instancji, liczba_wezlow):
     nazwa_pliku_wyjsciowego_nodes = "../uszeregowanie/szer-jsq-n" + "%03d-nodes-" % liczba_wezlow + nazwa_instancji
 
     czas_wezlow = [0] * liczba_wezlow
+    wykonana_praca_wezlow = [0] * liczba_wezlow
     zadania_wezlow = [[] for _ in range(liczba_wezlow)]
     wykonywane_zadania_wezlow = [[] for _ in range(liczba_wezlow)]
 
@@ -36,25 +37,18 @@ def szereguj_instancje(nazwa_instancji, liczba_wezlow):
         for indeks_wezla in range(liczba_wezlow):
             wykonywane_zadania_wezla = wykonywane_zadania_wezlow[indeks_wezla]
             liczba_wykonywanych_zadan = len(wykonywane_zadania_wezla)
-            wykonana_praca = 0
             while liczba_wykonywanych_zadan > 0:
-                czas_ukonczenia = czas_wezlow[indeks_wezla] + (wykonywane_zadania_wezla[0][1] - wykonana_praca) * liczba_wykonywanych_zadan
+                czas_ukonczenia = czas_wezlow[indeks_wezla] + (wykonywane_zadania_wezla[0][1] - wykonana_praca_wezlow[indeks_wezla]) * liczba_wykonywanych_zadan
                 if czas_ukonczenia > moment_gotowosci:
                     break
                 czas_opoznienia.append(0)
                 czas_przetwarzania.append(czas_ukonczenia - wykonywane_zadania_wezla[0][0])
                 czas_odpowiedzi.append(czas_przetwarzania[-1])
 
-                wykonana_praca += (czas_ukonczenia - czas_wezlow[indeks_wezla]) / liczba_wykonywanych_zadan
+                wykonana_praca_wezlow[indeks_wezla] += (czas_ukonczenia - czas_wezlow[indeks_wezla]) / liczba_wykonywanych_zadan
                 wykonywane_zadania_wezla.pop(0)
                 liczba_wykonywanych_zadan -= 1
                 czas_wezlow[indeks_wezla] = czas_ukonczenia
-
-            i = 0
-            while i < liczba_wykonywanych_zadan:
-                wykonywane_zadanie = wykonywane_zadania_wezla[i]
-                wykonywane_zadanie[1] = (wykonywane_zadanie[1] - wykonana_praca)
-                i += 1
 
         # wybor wezla z najmniejsza kolejka wykonywanych zadan
         indeks_wybranego_wezla = 0
@@ -68,13 +62,16 @@ def szereguj_instancje(nazwa_instancji, liczba_wezlow):
 
         # aktualizacja stanu wezla do chwili momentu gotowosci obecnego zadania
         i = 0
-        uplyniety_czas = moment_gotowosci - czas_wezlow[indeks_wybranego_wezla]
         wykonywane_zadania_wezla = wykonywane_zadania_wezlow[indeks_wybranego_wezla]
         liczba_wykonywanych_zadan = len(wykonywane_zadania_wezla)
+        uplyniety_czas = moment_gotowosci - czas_wezlow[indeks_wybranego_wezla]
+        if liczba_wykonywanych_zadan > 0:
+            wykonana_praca_wezlow[indeks_wybranego_wezla] += uplyniety_czas / liczba_wykonywanych_zadan
         while i < liczba_wykonywanych_zadan:
-            wykonywane_zadania_wezla[i][1] = wykonywane_zadania_wezla[i][1] - uplyniety_czas / liczba_wykonywanych_zadan
+            wykonywane_zadania_wezla[i][1] -= wykonana_praca_wezlow[indeks_wybranego_wezla]
             i += 1
         czas_wezlow[indeks_wybranego_wezla] = moment_gotowosci
+        wykonana_praca_wezlow[indeks_wybranego_wezla] = 0
 
         # wstawienie obecnego zadania do listy wykonywanych zadan wezla
         i = 0
@@ -90,14 +87,13 @@ def szereguj_instancje(nazwa_instancji, liczba_wezlow):
     for indeks_wezla in range(liczba_wezlow):
         wykonywane_zadania_wezla = wykonywane_zadania_wezlow[indeks_wezla]
         liczba_wykonywanych_zadan = len(wykonywane_zadania_wezla)
-        wykonana_praca = 0
         while liczba_wykonywanych_zadan > 0:
-            czas_ukonczenia = czas_wezlow[indeks_wezla] + (wykonywane_zadania_wezla[0][1] - wykonana_praca) * liczba_wykonywanych_zadan
+            czas_ukonczenia = czas_wezlow[indeks_wezla] + (wykonywane_zadania_wezla[0][1] - wykonana_praca_wezlow[indeks_wezla]) * liczba_wykonywanych_zadan
             czas_opoznienia.append(0)
             czas_przetwarzania.append(czas_ukonczenia - wykonywane_zadania_wezla[0][0])
             czas_odpowiedzi.append(czas_przetwarzania[-1])
 
-            wykonana_praca += (czas_ukonczenia - czas_wezlow[indeks_wezla]) / liczba_wykonywanych_zadan
+            wykonana_praca_wezlow[indeks_wezla] += (czas_ukonczenia - czas_wezlow[indeks_wezla]) / liczba_wykonywanych_zadan
             wykonywane_zadania_wezla.pop(0)
             liczba_wykonywanych_zadan -= 1
             czas_wezlow[indeks_wezla] = czas_ukonczenia
