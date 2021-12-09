@@ -56,12 +56,11 @@ class Node:
 
 def least_busy(nodes: list[Node]) -> Node:
     assert len(nodes) > 0
-    wining_nodes = [nodes[0]]
+    wining_node = nodes[0]
     for node in nodes[1:]:
+        if wining_node.active_tasks == 0:
+            return wining_node
+        if wining_node.active_tasks > node.active_tasks:
+            wining_node = node
 
-        if node.active_tasks < wining_nodes[0].active_tasks:
-            wining_nodes = [node]
-        elif node.active_tasks == wining_nodes[0].active_tasks:
-            wining_nodes.append(node)
-
-    return choice(wining_nodes)
+    return wining_node
