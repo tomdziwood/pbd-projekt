@@ -1,19 +1,19 @@
 import random
 
 
-def generuj_ziarno_losowosci(wspolczynnik_obciazenia, wspolczynnik_zmiennosci_przedkladania, wspolczynnik_zmiennosci_rozmiaru, liczba_cykli):
+def generuj_ziarno_losowosci(wspolczynnik_obciazenia, wspolczynnik_zmiennosci_przedkladania, wspolczynnik_zmiennosci_rozmiaru, poziom_jednorodnosci_fazy):
     ziarno_losowosci = wspolczynnik_obciazenia * 100
     ziarno_losowosci *= 1000
     ziarno_losowosci += wspolczynnik_zmiennosci_przedkladania * 100
     ziarno_losowosci *= 1000
     ziarno_losowosci += wspolczynnik_zmiennosci_rozmiaru * 100
     ziarno_losowosci *= 100
-    ziarno_losowosci += liczba_cykli
+    ziarno_losowosci += poziom_jednorodnosci_fazy * 10
     return round(ziarno_losowosci)
 
 
-def generuj_instancje(wspolczynnik_obciazenia, wspolczynnik_zmiennosci_przedkladania, wspolczynnik_zmiennosci_rozmiaru, liczba_cykli, nazwa_pliku_wyjsciowego):
-    ziarno_losowosci = generuj_ziarno_losowosci(wspolczynnik_obciazenia, wspolczynnik_zmiennosci_przedkladania, wspolczynnik_zmiennosci_rozmiaru, liczba_cykli)
+def generuj_instancje(wspolczynnik_obciazenia, wspolczynnik_zmiennosci_przedkladania, wspolczynnik_zmiennosci_rozmiaru, poziom_jednorodnosci_fazy, nazwa_pliku_wyjsciowego):
+    ziarno_losowosci = generuj_ziarno_losowosci(wspolczynnik_obciazenia, wspolczynnik_zmiennosci_przedkladania, wspolczynnik_zmiennosci_rozmiaru, poziom_jednorodnosci_fazy)
     random.seed(ziarno_losowosci)
     print("\nGenerowanie pliku " + nazwa_pliku_wyjsciowego + ", ziarno_losowosci=" + str(ziarno_losowosci))
 
@@ -78,39 +78,33 @@ def generuj_instancje(wspolczynnik_obciazenia, wspolczynnik_zmiennosci_przedklad
     # odchylenie standardowe czasu przedkladania zadan
     dx_t = w_t * ex_t
 
-    # wspolczynnik wielokrotnosci wskazujacy ile razy wieksza jest srednia dlugich czasow przedkladania od sredniej krotkich czasow przedkladania
-    k_t = 2
+    # odchylenia krotkich i dlugich czasow przedkladania maja jednakowa wartosc
+    dx_t0 = dx_t * (2 ** 0.5) / 2
 
     # srednie krotkich (1) i dlugich (2) czasow przedkladania
-    ex_t1 = 2 * ex_t / (1 + k_t)
-    ex_t2 = k_t * ex_t1
-
-    # zalozenie jednakowego wspolczynnika zmiennosci zarowno dla krotkich jak i dlugich czasow przedkladania
-    # wowczas wspolczynnik ten dla wczesniejszych stalych przyjmuje wartosc okreslona ponizszym wzorem
-    w_t0 = ((2 * dx_t ** 2 - (ex_t1 - ex_t) ** 2 - (ex_t2 - ex_t) ** 2) / (ex_t1 ** 2 + ex_t2 ** 2)) ** 0.5
-
-    # odchylenia krotkich i dlugich czasow przedkladania
-    dx_t1 = w_t0 * ex_t1
-    dx_t2 = w_t0 * ex_t2
+    # srednie skladowych rozkladow czasow przedkladania znajduja sie w rownej odleglosci od sredniej calego rozkladu czasow przedkladania
+    # odleglosc ta uzyta jest jako wartosc odchylenia standardowego skladowego rozkladu czasow przedkladania
+    ex_t1 = ex_t - dx_t0
+    ex_t2 = ex_t + dx_t0
 
     # ustalenie wspolczynnikow ksztaltu alfa i stosunku beta rozkladu gamma czasow przedkladania
     # dla ktorych zachodza ustalone wartosci srednie i odchylenia czasow przedkladania
-    alpha_t1 = (1 / w_t0) ** 2
-    alpha_t2 = (1 / w_t0) ** 2
+    alpha_t1 = (ex_t1 / dx_t0) ** 2
+    alpha_t2 = (ex_t2 / dx_t0) ** 2
 
     beta_t1 = ex_t1 / alpha_t1
     beta_t2 = ex_t2 / alpha_t2
 
     print("Parametry czasow przedkladania:")
     print("ex_t={}\tdx_t={}".format(ex_t, dx_t))
-    print("alpha_t1={}\tbeta_t1={}\tex_t1={}\tdx_t1={}".format(alpha_t1, beta_t1, ex_t1, dx_t1))
-    print("alpha_t2={}\tbeta_t2={}\tex_t2={}\tdx_t2={}".format(alpha_t2, beta_t2, ex_t2, dx_t2))
-    print("dx_t? / ex_t? = w_t0 = {}".format(w_t0))
+    print("alpha_t1={}\tbeta_t1={}\tex_t1={}\tdx_t1={}".format(alpha_t1, beta_t1, ex_t1, dx_t0))
+    print("alpha_t2={}\tbeta_t2={}\tex_t2={}\tdx_t2={}".format(alpha_t2, beta_t2, ex_t2, dx_t0))
 
     # generowanie kolejno momentow gotowosci dla kolejnych zadan
     momenty_gotowosci = [0]
     for i in range(1, liczba_zadan):
-        if (i // (liczba_zadan / (2 * liczba_cykli))) % 2 == 0:
+        wybor_glownego_rozkladu_skladowego = random.random() < poziom_jednorodnosci_fazy
+        if ((wybor_glownego_rozkladu_skladowego is True) and (i < liczba_zadan / 2)) or ((wybor_glownego_rozkladu_skladowego is False) and (i >= liczba_zadan / 2)):
             momenty_gotowosci.append(momenty_gotowosci[i - 1] + round(random.gammavariate(alpha=alpha_t1, beta=beta_t1)))
         else:
             momenty_gotowosci.append(momenty_gotowosci[i - 1] + round(random.gammavariate(alpha=alpha_t2, beta=beta_t2)))
