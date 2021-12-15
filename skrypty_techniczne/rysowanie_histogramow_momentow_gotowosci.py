@@ -1,4 +1,4 @@
-# Skrypt przeznaczony do zbadania wplywu coraz to wiekszego odchylenia standartowego dwoch skladowych rozkladow czasow przedkladania
+# Skrypt przeznaczony do zbadania wplywu rozsuwania srednich skladowych czasow przedkladania i powiekszania ich odchylen standardowych
 # w celu uzyskania coraz to wiekszego wspolczynnika zmiennosci czasow przedkladania
 
 import matplotlib.pyplot as plt
@@ -9,18 +9,18 @@ import re
 import math
 
 
-def rysuj_histogramy_momentow_gotowosci(liczba_cykli):
+def rysuj_histogramy_momentow_gotowosci(poziom_jednorodnosci):
     print("Rysowanie histogramow momentow gotowosci...")
     lista_nazw_instancji = os.listdir("../instancje")
 
-    wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9.]*-c' + "%03d" % liczba_cykli + '\\.txt$')
+    wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9.]*-j' + "%.1f" % poziom_jednorodnosci + '\\.txt$')
     lista_nazw_inst_przedk = list(filter(wzorzec_inst_przedk.match, lista_nazw_instancji))
     print(lista_nazw_inst_przedk)
 
     ncols = 2
     nrows = math.ceil(len(lista_nazw_inst_przedk) / ncols)
     plt.rcParams["figure.figsize"] = (ncols * 10, nrows * 7)
-    plt.suptitle("Histogramy momentow gotowosci (liczba cykli: " + str(liczba_cykli) + ")", fontsize=30, y=0.92)
+    plt.suptitle("Histogramy momentow gotowosci (poziom_jednorodnosci: " + str(poziom_jednorodnosci) + ")", fontsize=30, y=0.92)
 
     index_nazwa_inst_przedk = 1
     for nazwa_inst_przedk in lista_nazw_inst_przedk:
@@ -51,6 +51,9 @@ def rysuj_histogramy_momentow_gotowosci(liczba_cykli):
 
         plt.subplot(nrows, ncols, index_nazwa_inst_przedk)
         plt.hist(np_momenty_gotowosci, bins=400)
+        ax = plt.gca()
+        ax.set_xlim([0, 150000000])
+        ax.set_ylim([0, 600])
         plt.title(nazwa_inst_przedk)
         plt.xlabel('Czas', fontsize=8)
         plt.ylabel('Liczba wystapien', fontsize=8)
@@ -61,7 +64,7 @@ def rysuj_histogramy_momentow_gotowosci(liczba_cykli):
 
 
 def main():
-    rysuj_histogramy_momentow_gotowosci(5)
+    rysuj_histogramy_momentow_gotowosci(0.8)
 
 
 if __name__ == "__main__":

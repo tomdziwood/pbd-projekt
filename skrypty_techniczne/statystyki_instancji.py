@@ -11,7 +11,7 @@ import math
 
 def rysuj_charakterystyki_danej_instancji():
     zadania = []
-    f = open(file="../instancje/inst-obc-0.80-c005.txt", mode="r")
+    f = open(file="../instancje/inst-obc-0.80-j0.8.txt", mode="r")
     for line in f:
         zadania.append(line.split(' '))
     f.close()
@@ -58,16 +58,16 @@ def rysuj_charakterystyki_danej_instancji():
     plt.show()
 
 
-def wykryj_zbior_liczb_cykli():
-    zbior_liczb_cykli = set()
+def wykryj_zbior_poziomow_jednorodnosci_fazy():
+    zbior_poziomow_jednorodnosci_fazy = set()
 
     lista_nazw_instancji = os.listdir("../instancje")
-    wzorzec_liczby_cykli = re.compile('.*c([0-9]*)\.txt')
+    wzorzec_poziomu_jednorodnosci_fazy = re.compile('.*j([0-9.]*)\\.txt')
     for nazwa_instancji in lista_nazw_instancji:
-        wynik_dopasowania = wzorzec_liczby_cykli.match(nazwa_instancji)
+        wynik_dopasowania = wzorzec_poziomu_jednorodnosci_fazy.match(nazwa_instancji)
         if wynik_dopasowania is not None:
-            zbior_liczb_cykli.add(int(wynik_dopasowania.group(1)))
-    return sorted(zbior_liczb_cykli)
+            zbior_poziomow_jednorodnosci_fazy.add(float(wynik_dopasowania.group(1)))
+    return sorted(zbior_poziomow_jednorodnosci_fazy)
 
 
 def oblicz_wspolczynnik_obciazenia_instancji(nazwa_instancji):
@@ -94,31 +94,31 @@ def oblicz_wspolczynnik_obciazenia_instancji(nazwa_instancji):
 
 def rysuj_wykresy_wspolczynnika_obciazenia_systemu():
     print("Rysowanie wykresow wspolczynnika obciazenia systemu...")
-    zbior_liczb_cykli = wykryj_zbior_liczb_cykli()
+    zbior_poziomow_jednorodnosci_fazy = wykryj_zbior_poziomow_jednorodnosci_fazy()
     lista_nazw_instancji = os.listdir("../instancje")
-    index_liczba_cykli = 1
+    index_poziom_jednorodnosci_fazy = 1
     ncols = 2
-    nrows = math.ceil(len(zbior_liczb_cykli) / ncols)
+    nrows = math.ceil(len(zbior_poziomow_jednorodnosci_fazy) / ncols)
     plt.rcParams["figure.figsize"] = (ncols * 10, nrows * 7)
     plt.suptitle("Wspolczynnik obciazenia systemu", fontsize=30, y=0.92)
-    for liczba_cykli in zbior_liczb_cykli:
-        wzorzec_inst_obc = re.compile('^inst-obc-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
+    for poziom_jednorodnosci_fazy in zbior_poziomow_jednorodnosci_fazy:
+        wzorzec_inst_obc = re.compile('^inst-obc-[0-9.]*-j' + "%.1f" % (poziom_jednorodnosci_fazy) + '\\.txt$')
         lista_nazw_inst_obc = list(filter(wzorzec_inst_obc.match, lista_nazw_instancji))
         wspolczynniki_obciazenia_inst_obc = [oblicz_wspolczynnik_obciazenia_instancji(x) for x in lista_nazw_inst_obc]
         print(wzorzec_inst_obc.pattern + "\t" + str(wspolczynniki_obciazenia_inst_obc))
 
-        wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
+        wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9.]*-j' + "%.1f" % (poziom_jednorodnosci_fazy) + '\\.txt$')
         lista_nazw_inst_przedk = list(filter(wzorzec_inst_przedk.match, lista_nazw_instancji))
         wspolczynniki_obciazenia_inst_przedk = [oblicz_wspolczynnik_obciazenia_instancji(x) for x in lista_nazw_inst_przedk]
         print(wzorzec_inst_przedk.pattern + "\t" + str(wspolczynniki_obciazenia_inst_przedk))
 
-        wzorzec_inst_rozm = re.compile('^inst-rozm-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
+        wzorzec_inst_rozm = re.compile('^inst-rozm-[0-9.]*-j' + "%.1f" % (poziom_jednorodnosci_fazy) + '\\.txt$')
         lista_nazw_inst_rozm = list(filter(wzorzec_inst_rozm.match, lista_nazw_instancji))
         wspolczynniki_obciazenia_inst_rozm = [oblicz_wspolczynnik_obciazenia_instancji(x) for x in lista_nazw_inst_rozm]
         print(wzorzec_inst_rozm.pattern + "\t" + str(wspolczynniki_obciazenia_inst_rozm))
 
-        plt.subplot(nrows, ncols, index_liczba_cykli)
-        plt.title("Liczba cykli: " + str(liczba_cykli))
+        plt.subplot(nrows, ncols, index_poziom_jednorodnosci_fazy)
+        plt.title("Poziom jednorodnosci fazy: " + str(poziom_jednorodnosci_fazy))
 
         ax1 = plt.gca()
         line_obc, = ax1.plot(wspolczynniki_obciazenia_inst_obc, color='blue', label='obc', marker='.')
@@ -136,7 +136,7 @@ def rysuj_wykresy_wspolczynnika_obciazenia_systemu():
 
         plt.legend(handles=[line_obc, line_przedk, line_rozm], loc="upper left")
 
-        index_liczba_cykli += 1
+        index_poziom_jednorodnosci_fazy += 1
 
     plt.savefig("Wspolczynnik obciazenia systemu.png", dpi=300)
 
@@ -163,31 +163,31 @@ def oblicz_wspolczynnik_zmiennosci_czasow_przedkladania(nazwa_instancji):
 
 def rysuj_wykresy_wspolczynnika_zmiennosci_czasow_przedkladania():
     print("Rysowanie wykresow wspolczynnika zmiennosci czasow przedkladania...")
-    zbior_liczb_cykli = wykryj_zbior_liczb_cykli()
+    zbior_poziomow_jednorodnosci_fazy = wykryj_zbior_poziomow_jednorodnosci_fazy()
     lista_nazw_instancji = os.listdir("../instancje")
-    index_liczba_cykli = 1
+    index_poziom_jednorodnosci_fazy = 1
     ncols = 2
-    nrows = math.ceil(len(zbior_liczb_cykli) / ncols)
+    nrows = math.ceil(len(zbior_poziomow_jednorodnosci_fazy) / ncols)
     plt.rcParams["figure.figsize"] = (ncols * 10, nrows * 7)
     plt.suptitle("Wspolczynnik zmiennosci czasow przedkladania", fontsize=30, y=0.92)
-    for liczba_cykli in zbior_liczb_cykli:
-        wzorzec_inst_obc = re.compile('^inst-obc-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
+    for poziom_jednorodnosci_fazy in zbior_poziomow_jednorodnosci_fazy:
+        wzorzec_inst_obc = re.compile('^inst-obc-[0-9.]*-j' + "%.1f" % (poziom_jednorodnosci_fazy) + '\\.txt$')
         lista_nazw_inst_obc = list(filter(wzorzec_inst_obc.match, lista_nazw_instancji))
         wspolczynniki_zmiennosci_czasow_przedkladania_inst_obc = [oblicz_wspolczynnik_zmiennosci_czasow_przedkladania(x) for x in lista_nazw_inst_obc]
         print(wzorzec_inst_obc.pattern + "\t" + str(wspolczynniki_zmiennosci_czasow_przedkladania_inst_obc))
 
-        wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
+        wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9.]*-j' + "%.1f" % (poziom_jednorodnosci_fazy) + '\\.txt$')
         lista_nazw_inst_przedk = list(filter(wzorzec_inst_przedk.match, lista_nazw_instancji))
         wspolczynniki_zmiennosci_czasow_przedkladania_inst_przedk = [oblicz_wspolczynnik_zmiennosci_czasow_przedkladania(x) for x in lista_nazw_inst_przedk]
         print(wzorzec_inst_przedk.pattern + "\t" + str(wspolczynniki_zmiennosci_czasow_przedkladania_inst_przedk))
 
-        wzorzec_inst_rozm = re.compile('^inst-rozm-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
+        wzorzec_inst_rozm = re.compile('^inst-rozm-[0-9.]*-j' + "%.1f" % (poziom_jednorodnosci_fazy) + '\\.txt$')
         lista_nazw_inst_rozm = list(filter(wzorzec_inst_rozm.match, lista_nazw_instancji))
         wspolczynniki_zmiennosci_czasow_przedkladania_inst_rozm = [oblicz_wspolczynnik_zmiennosci_czasow_przedkladania(x) for x in lista_nazw_inst_rozm]
         print(wzorzec_inst_rozm.pattern + "\t" + str(wspolczynniki_zmiennosci_czasow_przedkladania_inst_rozm))
 
-        plt.subplot(nrows, ncols, index_liczba_cykli)
-        plt.title("Liczba cykli: " + str(liczba_cykli))
+        plt.subplot(nrows, ncols, index_poziom_jednorodnosci_fazy)
+        plt.title("Poziom jednorodnosci fazy: " + str(poziom_jednorodnosci_fazy))
 
         ax1 = plt.gca()
         line_obc, = ax1.plot(wspolczynniki_zmiennosci_czasow_przedkladania_inst_obc, color='blue', label='obc', marker='.')
@@ -205,7 +205,7 @@ def rysuj_wykresy_wspolczynnika_zmiennosci_czasow_przedkladania():
 
         plt.legend(handles=[line_obc, line_przedk, line_rozm], loc="upper left")
 
-        index_liczba_cykli += 1
+        index_poziom_jednorodnosci_fazy += 1
 
     plt.savefig("Wspolczynnik zmiennosci czasow przedkladania.png", dpi=300)
 
@@ -226,31 +226,31 @@ def oblicz_wspolczynnik_zmiennosci_rozmiarow(nazwa_instancji):
 
 def rysuj_wykresy_wspolczynnika_zmiennosci_rozmiarow():
     print("Rysowanie wykresow wspolczynnika zmiennosci czasow przedkladania...")
-    zbior_liczb_cykli = wykryj_zbior_liczb_cykli()
+    zbior_poziomow_jednorodnosci_fazy = wykryj_zbior_poziomow_jednorodnosci_fazy()
     lista_nazw_instancji = os.listdir("../instancje")
-    index_liczba_cykli = 1
+    index_poziom_jednorodnosci_fazy = 1
     ncols = 2
-    nrows = math.ceil(len(zbior_liczb_cykli) / ncols)
+    nrows = math.ceil(len(zbior_poziomow_jednorodnosci_fazy) / ncols)
     plt.rcParams["figure.figsize"] = (ncols * 10, nrows * 7)
     plt.suptitle("Wspolczynnik zmiennosci rozmiarow", fontsize=30, y=0.92)
-    for liczba_cykli in zbior_liczb_cykli:
-        wzorzec_inst_obc = re.compile('^inst-obc-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
+    for poziom_jednorodnosci_fazy in zbior_poziomow_jednorodnosci_fazy:
+        wzorzec_inst_obc = re.compile('^inst-obc-[0-9.]*-j' + "%.1f" % (poziom_jednorodnosci_fazy) + '\\.txt$')
         lista_nazw_inst_obc = list(filter(wzorzec_inst_obc.match, lista_nazw_instancji))
         wspolczynniki_zmiennosci_rozmiarow_inst_obc = [oblicz_wspolczynnik_zmiennosci_rozmiarow(x) for x in lista_nazw_inst_obc]
         print(wzorzec_inst_obc.pattern + "\t" + str(wspolczynniki_zmiennosci_rozmiarow_inst_obc))
 
-        wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
+        wzorzec_inst_przedk = re.compile('^inst-przedk-[0-9.]*-j' + "%.1f" % (poziom_jednorodnosci_fazy) + '\\.txt$')
         lista_nazw_inst_przedk = list(filter(wzorzec_inst_przedk.match, lista_nazw_instancji))
         wspolczynniki_zmiennosci_rozmiarow_inst_przedk = [oblicz_wspolczynnik_zmiennosci_rozmiarow(x) for x in lista_nazw_inst_przedk]
         print(wzorzec_inst_przedk.pattern + "\t" + str(wspolczynniki_zmiennosci_rozmiarow_inst_przedk))
 
-        wzorzec_inst_rozm = re.compile('^inst-rozm-[0-9\.]*-c' + "%03d" % (liczba_cykli) + '\.txt$')
+        wzorzec_inst_rozm = re.compile('^inst-rozm-[0-9.]*-j' + "%.1f" % (poziom_jednorodnosci_fazy) + '\\.txt$')
         lista_nazw_inst_rozm = list(filter(wzorzec_inst_rozm.match, lista_nazw_instancji))
         wspolczynniki_zmiennosci_rozmiarow_inst_rozm = [oblicz_wspolczynnik_zmiennosci_rozmiarow(x) for x in lista_nazw_inst_rozm]
         print(wzorzec_inst_rozm.pattern + "\t" + str(wspolczynniki_zmiennosci_rozmiarow_inst_rozm))
 
-        plt.subplot(nrows, ncols, index_liczba_cykli)
-        plt.title("Liczba cykli: " + str(liczba_cykli))
+        plt.subplot(nrows, ncols, index_poziom_jednorodnosci_fazy)
+        plt.title("Poziom jednorodnosci fazy: " + str(poziom_jednorodnosci_fazy))
 
         ax1 = plt.gca()
         line_obc, = ax1.plot(wspolczynniki_zmiennosci_rozmiarow_inst_obc, color='blue', label='obc', marker='.')
@@ -268,7 +268,7 @@ def rysuj_wykresy_wspolczynnika_zmiennosci_rozmiarow():
 
         plt.legend(handles=[line_obc, line_przedk, line_rozm], loc="upper left")
 
-        index_liczba_cykli += 1
+        index_poziom_jednorodnosci_fazy += 1
 
     plt.savefig("Wspolczynnik zmiennosci rozmiarow.png", dpi=300)
 
