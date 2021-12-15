@@ -237,42 +237,42 @@ def weryfikuj_uszeregowanie(nazwa_pliku_wejsciowego, nazwa_pliku_wyjsciowego):
 
 def weryfikuj_uszeregowanie_obc(program_szeregujacy):
     liczby_wezlow = [1, 2, 5, 10, 20, 50, 100]
-    liczby_cykli = [1, 2, 5, 10, 20, 50, 100]
+    poziomy_jednorodnosci_fazy = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
     for wo_tmp in range(50, 100, 5):
         wspolczynnik_obciazenia = wo_tmp / 100
-        for liczba_cykli in liczby_cykli:
+        for poziom_jednorodnosci_fazy in poziomy_jednorodnosci_fazy:
             for liczba_wezlow in liczby_wezlow:
-                nazwa_pliku_wejsciowego = "../instancje/inst-obc-" + "%.2f" % wspolczynnik_obciazenia + "-c" + "%03d" % liczba_cykli + ".txt"
-                nazwa_pliku_wyjsciowego = "../uszeregowanie/%s-n" % program_szeregujacy + "%03d-nodes-" % liczba_wezlow + "inst-obc-" + "%.2f" % wspolczynnik_obciazenia + "-c" + "%03d" % liczba_cykli + ".txt"
+                nazwa_pliku_wejsciowego = "../instancje/inst-obc-" + "%.2f" % wspolczynnik_obciazenia + "-j" + "%.1f" % poziom_jednorodnosci_fazy + ".txt"
+                nazwa_pliku_wyjsciowego = "../uszeregowanie/%s-n" % program_szeregujacy + "%03d-nodes-" % liczba_wezlow + "inst-obc-" + "%.2f" % wspolczynnik_obciazenia + "-j" + "%.1f" % poziom_jednorodnosci_fazy + ".txt"
                 # print("Weryfikuje uszeregowanie " + nazwa_pliku_wyjsciowego + "\t(" + nazwa_pliku_wejsciowego + ")")
                 weryfikuj_uszeregowanie(nazwa_pliku_wejsciowego, nazwa_pliku_wyjsciowego)
 
 
 def weryfikuj_uszeregowanie_przedk(program_szeregujacy):
     liczby_wezlow = [1, 2, 5, 10, 20, 50, 100]
-    liczby_cykli = [1, 2, 5, 10, 20, 50, 100]
+    poziomy_jednorodnosci_fazy = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
-    for wzp_tmp in range(50, 301, 25):
-        wspolczynnik_zmiennosci_przedkladania = wzp_tmp / 100
-        for liczba_cykli in liczby_cykli:
+    for wzp_tmp in range(2, 13, 1):
+        wspolczynnik_zmiennosci_przedkladania = wzp_tmp / 10
+        for poziom_jednorodnosci_fazy in poziomy_jednorodnosci_fazy:
             for liczba_wezlow in liczby_wezlow:
-                nazwa_pliku_wejsciowego = "../instancje/inst-przedk-" + "%.2f" % wspolczynnik_zmiennosci_przedkladania + "-c" + "%03d" % liczba_cykli + ".txt"
-                nazwa_pliku_wyjsciowego = "../uszeregowanie/%s-n" % program_szeregujacy + "%03d-nodes-" % liczba_wezlow + "inst-przedk-" + "%.2f" % wspolczynnik_zmiennosci_przedkladania + "-c" + "%03d" % liczba_cykli + ".txt"
+                nazwa_pliku_wejsciowego = "../instancje/inst-przedk-" + "%.2f" % wspolczynnik_zmiennosci_przedkladania + "-j" + "%.1f" % poziom_jednorodnosci_fazy + ".txt"
+                nazwa_pliku_wyjsciowego = "../uszeregowanie/%s-n" % program_szeregujacy + "%03d-nodes-" % liczba_wezlow + "inst-przedk-" + "%.2f" % wspolczynnik_zmiennosci_przedkladania + "-j" + "%.1f" % poziom_jednorodnosci_fazy + ".txt"
                 # print("Weryfikuje uszeregowanie " + nazwa_pliku_wyjsciowego + "\t(" + nazwa_pliku_wejsciowego + ")")
                 weryfikuj_uszeregowanie(nazwa_pliku_wejsciowego, nazwa_pliku_wyjsciowego)
 
 
 def weryfikuj_uszeregowanie_rozm(program_szeregujacy):
     liczby_wezlow = [1, 2, 5, 10, 20, 50, 100]
-    liczby_cykli = [1, 2, 5, 10, 20, 50, 100]
+    poziomy_jednorodnosci_fazy = [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
 
     for wzr_tmp in range(50, 401, 50):
         wspolczynnik_zmiennosci_rozmiaru = wzr_tmp / 100
-        for liczba_cykli in liczby_cykli:
+        for poziom_jednorodnosci_fazy in poziomy_jednorodnosci_fazy:
             for liczba_wezlow in liczby_wezlow:
-                nazwa_pliku_wejsciowego = "../instancje/inst-rozm-" + "%.2f" % wspolczynnik_zmiennosci_rozmiaru + "-c" + "%03d" % liczba_cykli + ".txt"
-                nazwa_pliku_wyjsciowego = "../uszeregowanie/%s-n" % program_szeregujacy + "%03d-nodes-" % liczba_wezlow + "inst-rozm-" + "%.2f" % wspolczynnik_zmiennosci_rozmiaru + "-c" + "%03d" % liczba_cykli + ".txt"
+                nazwa_pliku_wejsciowego = "../instancje/inst-rozm-" + "%.2f" % wspolczynnik_zmiennosci_rozmiaru + "-j" + "%.1f" % poziom_jednorodnosci_fazy + ".txt"
+                nazwa_pliku_wyjsciowego = "../uszeregowanie/%s-n" % program_szeregujacy + "%03d-nodes-" % liczba_wezlow + "inst-rozm-" + "%.2f" % wspolczynnik_zmiennosci_rozmiaru + "-j" + "%.1f" % poziom_jednorodnosci_fazy + ".txt"
                 # print("Weryfikuje uszeregowanie " + nazwa_pliku_wyjsciowego + "\t(" + nazwa_pliku_wejsciowego + ")")
                 weryfikuj_uszeregowanie(nazwa_pliku_wejsciowego, nazwa_pliku_wyjsciowego)
 
@@ -288,8 +288,8 @@ def weryfikuj_uszeregowanie_proba_01():
     liczby_wezlow = [1, 2, 5, 10, 20, 50, 100]
 
     for liczba_wezlow in liczby_wezlow:
-        nazwa_pliku_wejsciowego = "../instancje/inst-obc-0.95-c020.txt"
-        nazwa_pliku_wyjsciowego = "../uszeregowanie/szer-test-n" + "%03d-nodes-" % liczba_wezlow + "inst-obc-0.95-c020.txt"
+        nazwa_pliku_wejsciowego = "../instancje/inst-obc-0.95-j0.8.txt"
+        nazwa_pliku_wyjsciowego = "../uszeregowanie/szer-test-n" + "%03d-nodes-" % liczba_wezlow + "inst-obc-0.95-j0.8.txt"
         wynik_weryfikacji = weryfikuj_uszeregowanie(nazwa_pliku_wejsciowego, nazwa_pliku_wyjsciowego)
         wyniki_weryfikacji.dodaj_wynik_weryfikacji(wynik_weryfikacji)
 
@@ -301,8 +301,8 @@ def weryfikuj_uszeregowanie_proba_02():
     liczby_wezlow = [1, 2, 5, 10, 20, 50, 100]
 
     for liczba_wezlow in liczby_wezlow:
-        nazwa_pliku_wejsciowego = "../instancje/inst-rozm-1.50-c010.txt"
-        nazwa_pliku_wyjsciowego = "../uszeregowanie/szer-jnq-n" + "%03d-nodes-" % liczba_wezlow + "inst-rozm-1.50-c010.txt"
+        nazwa_pliku_wejsciowego = "../instancje/inst-rozm-1.50-j1.0.txt"
+        nazwa_pliku_wyjsciowego = "../uszeregowanie/szer-jnq-n" + "%03d-nodes-" % liczba_wezlow + "inst-rozm-1.50-j1.0.txt"
         wynik_weryfikacji = weryfikuj_uszeregowanie(nazwa_pliku_wejsciowego, nazwa_pliku_wyjsciowego)
         wyniki_weryfikacji.dodaj_wynik_weryfikacji(wynik_weryfikacji)
 
@@ -314,8 +314,8 @@ def weryfikuj_uszeregowanie_proba_03():
     liczby_wezlow = [1, 2, 5, 10, 20, 50, 100]
 
     for liczba_wezlow in liczby_wezlow:
-        nazwa_pliku_wejsciowego = "../instancje/inst-przedk-1.75-c020.txt"
-        nazwa_pliku_wyjsciowego = "../uszeregowanie/szer-jsq-n" + "%03d-nodes-" % liczba_wezlow + "inst-przedk-1.75-c020.txt"
+        nazwa_pliku_wejsciowego = "../instancje/inst-przedk-0.9-j0.7.txt"
+        nazwa_pliku_wyjsciowego = "../uszeregowanie/szer-jsq-n" + "%03d-nodes-" % liczba_wezlow + "inst-przedk-1.75-j0.7.txt"
         wynik_weryfikacji = weryfikuj_uszeregowanie(nazwa_pliku_wejsciowego, nazwa_pliku_wyjsciowego)
         wyniki_weryfikacji.dodaj_wynik_weryfikacji(wynik_weryfikacji)
 

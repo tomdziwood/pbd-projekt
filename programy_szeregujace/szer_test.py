@@ -64,7 +64,7 @@ def main():
     liczby_wezlow = [1, 2, 5, 10, 20, 50, 100]
 
     for liczba_wezlow in liczby_wezlow:
-        szereguj_instancje("inst-obc-0.95-c020.txt", liczba_wezlow)
+        szereguj_instancje("inst-obc-0.95-j0.8.txt", liczba_wezlow)
 
 
 if __name__ == "__main__":
