@@ -8,7 +8,7 @@ def main():
         wspolczynnik_obciazenia = wo_tmp / 100
         for poziom_jednorodnosci_fazy in poziomy_jednorodnosci_fazy:
             nazwa_pliku_wyjsciowego = "../instancje/inst-obc-" + "%.2f" % (wspolczynnik_obciazenia) + "-j" + "%.1f" % (poziom_jednorodnosci_fazy) + ".txt"
-            generuj_instancje(wspolczynnik_obciazenia, 1, 1.5, poziom_jednorodnosci_fazy, nazwa_pliku_wyjsciowego)
+            generuj_instancje(wspolczynnik_obciazenia, 0.5, 1.5, poziom_jednorodnosci_fazy, nazwa_pliku_wyjsciowego)
 
 
 if __name__ == "__main__":
