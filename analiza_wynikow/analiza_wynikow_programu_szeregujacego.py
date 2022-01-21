@@ -133,7 +133,7 @@ def rysuj_wykresy_porownania_liczby_wezlow(program_szeregujacy, parametr):
             plt.plot(zbior_wartosci_parametru, lista_czasow_z_dana_liczba_wezlow, color=mapa_kolorow[indeks], label=str(liczba_wezlow))
         plt.legend(title="Liczba wezlow")
         plt.xlabel("Wartosc parametru", fontsize=8)
-        plt.ylabel("Czas opoznienia", fontsize=8)
+        plt.ylabel("Czas odpowiedzi", fontsize=8)
 
         plt.subplot(nrows, ncols, ncols + index_poziom_jednorodnosci_fazy)
         plt.title("poziom_jednorodnosci_fazy=%s" % poziom_jednorodnosci_fazy)
@@ -144,23 +144,23 @@ def rysuj_wykresy_porownania_liczby_wezlow(program_szeregujacy, parametr):
             plt.plot(zbior_wartosci_parametru, lista_czasow_z_dana_liczba_wezlow, color=mapa_kolorow[indeks], label=str(liczba_wezlow))
         plt.legend(title="Liczba wezlow")
         plt.xlabel("Wartosc parametru", fontsize=8)
-        plt.ylabel("Czas opoznienia (skala logarytmiczna)", fontsize=8)
+        plt.ylabel("Czas odpowiedzi (skala logarytmiczna)", fontsize=8)
 
-        maksymalny_czas_opoznienia_dla_danej_wartosci_parametru = []
+        maksymalny_czas_odpowiedzi_dla_danej_wartosci_parametru = []
         for i in range(len(zbior_wartosci_parametru)):
-            maksymalny_czas_opoznienia_dla_danej_wartosci_parametru.append(0)
+            maksymalny_czas_odpowiedzi_dla_danej_wartosci_parametru.append(0)
 
         for lista_czasow in lista_list_czasow:
             for i in range(len(zbior_wartosci_parametru)):
-                if maksymalny_czas_opoznienia_dla_danej_wartosci_parametru[i] < lista_czasow[i]:
-                    maksymalny_czas_opoznienia_dla_danej_wartosci_parametru[i] = lista_czasow[i]
+                if maksymalny_czas_odpowiedzi_dla_danej_wartosci_parametru[i] < lista_czasow[i]:
+                    maksymalny_czas_odpowiedzi_dla_danej_wartosci_parametru[i] = lista_czasow[i]
 
         lista_wyskalowanych_list_czasow = []
         for index_liczba_wezlow in range(len(zbior_liczb_wezlow)):
             wyskalowana_lista_czasow = []
             index_wartosc_parametru = 0
-            for czas_opoznienia in lista_list_czasow[index_liczba_wezlow]:
-                wyskalowana_lista_czasow.append(czas_opoznienia / maksymalny_czas_opoznienia_dla_danej_wartosci_parametru[index_wartosc_parametru])
+            for czas_odpowiedzi in lista_list_czasow[index_liczba_wezlow]:
+                wyskalowana_lista_czasow.append(czas_odpowiedzi / maksymalny_czas_odpowiedzi_dla_danej_wartosci_parametru[index_wartosc_parametru])
                 index_wartosc_parametru += 1
             lista_wyskalowanych_list_czasow.append(wyskalowana_lista_czasow)
 
@@ -172,7 +172,7 @@ def rysuj_wykresy_porownania_liczby_wezlow(program_szeregujacy, parametr):
             plt.plot(zbior_wartosci_parametru, lista_wyskalowanych_czasow_z_dana_liczba_wezlow, color=mapa_kolorow[indeks], label=str(liczba_wezlow))
         plt.legend(title="Liczba wezlow")
         plt.xlabel("Wartosc parametru", fontsize=8)
-        plt.ylabel("Stosunek czasu opoznienia do maksymalnego czasu opoznienia dla danej wartosci parametru", fontsize=8)
+        plt.ylabel("Stosunek czasu odpowiedzi do maksymalnego czasu odpowiedzi dla danej wartosci parametru", fontsize=8)
 
 
         index_poziom_jednorodnosci_fazy += 1
@@ -182,12 +182,12 @@ def rysuj_wykresy_porownania_liczby_wezlow(program_szeregujacy, parametr):
 
 def main():
     # rysuj_wykres_porownania_liczby_wezlow("jnq", "obc", 1)
-    rysuj_wykresy_porownania_liczby_wezlow("jnq", "obc")
+    # rysuj_wykresy_porownania_liczby_wezlow("jnq", "obc")
     # rysuj_wykresy_porownania_liczby_wezlow("jnq", "rozm")
     # rysuj_wykresy_porownania_liczby_wezlow("jnq", "przedk")
     # rysuj_wykresy_porownania_liczby_wezlow("jsq", "obc")
     # rysuj_wykresy_porownania_liczby_wezlow("jsq", "rozm")
-    # rysuj_wykresy_porownania_liczby_wezlow("jsq", "przedk")
+    rysuj_wykresy_porownania_liczby_wezlow("jsq", "przedk")
 
 
 if __name__ == "__main__":
