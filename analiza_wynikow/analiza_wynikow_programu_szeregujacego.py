@@ -100,7 +100,7 @@ def rysuj_wykresy_porownania_liczby_wezlow(program_szeregujacy, parametr):
 
     index_poziom_jednorodnosci_fazy = 1
     ncols = len(zbior_poziomow_jednorodnosci_fazy)
-    nrows = 3
+    nrows = 4
     plt.rcParams["figure.figsize"] = (ncols * 10, nrows * 7)
     plt.suptitle("program_szeregujacy=\"%s\" | parametr=\"%s\"" % (program_szeregujacy, parametr), fontsize=30, y=0.95)
     for poziom_jednorodnosci_fazy in zbior_poziomow_jednorodnosci_fazy:
@@ -173,11 +173,137 @@ def rysuj_wykresy_porownania_liczby_wezlow(program_szeregujacy, parametr):
         plt.legend(title="Liczba wezlow")
         plt.xlabel("Wartosc parametru", fontsize=8)
         plt.ylabel("Stosunek czasu odpowiedzi do maksymalnego czasu odpowiedzi dla danej wartosci parametru", fontsize=8)
+        ax = plt.gca()
+        ax.set_ylim([-0.05, 1.05])
+
+        lista_wyskalowanych_list_czasow = []
+        for index_liczba_wezlow in range(len(zbior_liczb_wezlow)):
+            wyskalowana_lista_czasow = []
+            index_wartosc_parametru = 0
+            for czas_odpowiedzi in lista_list_czasow[index_liczba_wezlow]:
+                wyskalowana_lista_czasow.append(czas_odpowiedzi / lista_list_czasow[0][index_wartosc_parametru])
+                index_wartosc_parametru += 1
+            lista_wyskalowanych_list_czasow.append(wyskalowana_lista_czasow)
+
+        plt.subplot(nrows, ncols, 3 * ncols + index_poziom_jednorodnosci_fazy)
+        plt.title("poziom_jednorodnosci_fazy=%s" % poziom_jednorodnosci_fazy)
+        plt.yscale('log')
+        for indeks in range(len(zbior_liczb_wezlow)):
+            liczba_wezlow = zbior_liczb_wezlow[indeks]
+            lista_wyskalowanych_czasow_z_dana_liczba_wezlow = lista_wyskalowanych_list_czasow[indeks]
+            plt.plot(zbior_wartosci_parametru, lista_wyskalowanych_czasow_z_dana_liczba_wezlow, color=mapa_kolorow[indeks], label=str(liczba_wezlow))
+        plt.legend(title="Liczba wezlow")
+        plt.xlabel("Wartosc parametru", fontsize=8)
+        plt.ylabel("Stosunek czasu odpowiedzi do czasu odpowiedzi systemu superkomuptera", fontsize=8)
 
 
         index_poziom_jednorodnosci_fazy += 1
 
     plt.savefig("Porownanie liczby wezlow (%s, %s).png" % (program_szeregujacy, parametr), dpi=300)
+
+
+def rysuj_wykresy_porownania_poziomu_jednorodnosci(program_szeregujacy, parametr):
+    print("Rysuje wykres:\tprogram_szeregujacy=\"%s\"\tparametr=\"%s\"" % (program_szeregujacy, parametr))
+    lista_nazw_uszeregowan = os.listdir("../uszeregowanie")
+    wzorzec_wykorzystywanych_uszeregowan = re.compile('^szer-' + program_szeregujacy + '-n[0-9]*-inst-' + parametr + '-[0-9.]*-j[0-9.]*\\.txt$')
+    lista_wykorzystywanych_uszeregowan = list(filter(wzorzec_wykorzystywanych_uszeregowan.match, lista_nazw_uszeregowan))
+
+    zbior_poziomow_jednorodnosci_fazy = wykryj_zbior_poziomow_jednorodnosci_fazy(lista_wykorzystywanych_uszeregowan)
+    print("Zbior poziomow jednorodnosci fazy: " + str(zbior_poziomow_jednorodnosci_fazy))
+
+    zbior_liczb_wezlow = wykryj_zbior_liczb_wezlow(lista_wykorzystywanych_uszeregowan)
+    print("Zbior liczb wezlow: " + str(zbior_liczb_wezlow))
+
+    zbior_wartosci_parametru = wykryj_zbior_wartosci_parametru(lista_wykorzystywanych_uszeregowan)
+    print("Zbior wartosci parametru: " + str(zbior_wartosci_parametru))
+
+    index_wartosc_parametru = 1
+    ncols = len(zbior_wartosci_parametru)
+    nrows = 3
+    plt.rcParams["figure.figsize"] = (ncols * 10, nrows * 7)
+    plt.suptitle("program_szeregujacy=\"%s\" | parametr=\"%s\"" % (program_szeregujacy, parametr), fontsize=30, y=0.95)
+    for wartosc_parametru in zbior_wartosci_parametru:
+        lista_list_czasow = []
+        for liczba_wezlow in zbior_liczb_wezlow:
+            tekst_wzorca_uszeregowan_z_dana_liczba_wezlow = '^szer-' + program_szeregujacy + '-n' + "%03d" % liczba_wezlow + '-inst-' + parametr
+            if parametr == "przedk":
+                tekst_wzorca_uszeregowan_z_dana_liczba_wezlow += "-%.1f-j[0-9.]*\\.txt$" % wartosc_parametru
+            else:
+                tekst_wzorca_uszeregowan_z_dana_liczba_wezlow += "-%.2f-j[0-9.]*\\.txt$" % wartosc_parametru
+            wzorzec_uszeregowan_z_dana_liczba_wezlow = re.compile(tekst_wzorca_uszeregowan_z_dana_liczba_wezlow)
+            lista_uszeregowan_z_dana_liczba_wezlow = list(filter(wzorzec_uszeregowan_z_dana_liczba_wezlow.match, lista_wykorzystywanych_uszeregowan))
+            lista_czasow_z_dana_liczba_wezlow = []
+            for uszeregowanie in lista_uszeregowan_z_dana_liczba_wezlow:
+                nazwa_pliku_wejsciowego = '../uszeregowanie/' + uszeregowanie
+                f = open(file=nazwa_pliku_wejsciowego, mode="r")
+                [sredni_czas_opoznienia, sredni_czas_przetwarzania, sredni_czas_odpowiedzi] = [float(liczba) for liczba in f.readline().split(' ')]
+                lista_czasow_z_dana_liczba_wezlow.append(sredni_czas_odpowiedzi)
+                f.close()
+            lista_list_czasow.append(lista_czasow_z_dana_liczba_wezlow)
+        print(lista_list_czasow)
+
+        mapa_kolorow = []
+        for i in range(len(zbior_liczb_wezlow)):
+            v = 0.8 - 0.8 * i / (len(zbior_liczb_wezlow) - 1)
+            if v < 0:
+                v = 0
+            mapa_kolorow.append((v, v, v))
+
+        plt.subplot(nrows, ncols, index_wartosc_parametru)
+        plt.title("wartosc parametru %s: %.2f" % (parametr, wartosc_parametru))
+        for indeks in range(len(zbior_liczb_wezlow)):
+            liczba_wezlow = zbior_liczb_wezlow[indeks]
+            lista_czasow_z_dana_liczba_wezlow = lista_list_czasow[indeks]
+            plt.plot(zbior_poziomow_jednorodnosci_fazy, lista_czasow_z_dana_liczba_wezlow, color=mapa_kolorow[indeks], label=str(liczba_wezlow))
+        plt.legend(title="Liczba wezlow")
+        plt.xlabel("Wartosc poziomu jednorodnosci", fontsize=8)
+        plt.ylabel("Czas odpowiedzi", fontsize=8)
+
+        plt.subplot(nrows, ncols, ncols + index_wartosc_parametru)
+        plt.title("wartosc parametru %s: %.2f" % (parametr, wartosc_parametru))
+        plt.yscale('log')
+        for indeks in range(len(zbior_liczb_wezlow)):
+            liczba_wezlow = zbior_liczb_wezlow[indeks]
+            lista_czasow_z_dana_liczba_wezlow = lista_list_czasow[indeks]
+            plt.plot(zbior_poziomow_jednorodnosci_fazy, lista_czasow_z_dana_liczba_wezlow, color=mapa_kolorow[indeks], label=str(liczba_wezlow))
+        plt.legend(title="Liczba wezlow")
+        plt.xlabel("Wartosc poziomu jednorodnosci", fontsize=8)
+        plt.ylabel("Czas odpowiedzi (skala logarytmiczna)", fontsize=8)
+
+        maksymalny_czas_odpowiedzi_dla_danej_wartosci_parametru = []
+        for i in range(len(zbior_poziomow_jednorodnosci_fazy)):
+            maksymalny_czas_odpowiedzi_dla_danej_wartosci_parametru.append(0)
+
+        for lista_czasow in lista_list_czasow:
+            for i in range(len(zbior_poziomow_jednorodnosci_fazy)):
+                if maksymalny_czas_odpowiedzi_dla_danej_wartosci_parametru[i] < lista_czasow[i]:
+                    maksymalny_czas_odpowiedzi_dla_danej_wartosci_parametru[i] = lista_czasow[i]
+
+        lista_wyskalowanych_list_czasow = []
+        for index_liczba_wezlow in range(len(zbior_liczb_wezlow)):
+            wyskalowana_lista_czasow = []
+            index_poziom_jednorodnosci_fazy = 0
+            for czas_odpowiedzi in lista_list_czasow[index_liczba_wezlow]:
+                wyskalowana_lista_czasow.append(czas_odpowiedzi / maksymalny_czas_odpowiedzi_dla_danej_wartosci_parametru[index_poziom_jednorodnosci_fazy])
+                index_poziom_jednorodnosci_fazy += 1
+            lista_wyskalowanych_list_czasow.append(wyskalowana_lista_czasow)
+
+        plt.subplot(nrows, ncols, 2 * ncols + index_wartosc_parametru)
+        plt.title("wartosc parametru %s: %.2f" % (parametr, wartosc_parametru))
+        for indeks in range(len(zbior_liczb_wezlow)):
+            liczba_wezlow = zbior_liczb_wezlow[indeks]
+            lista_wyskalowanych_czasow_z_dana_liczba_wezlow = lista_wyskalowanych_list_czasow[indeks]
+            plt.plot(zbior_poziomow_jednorodnosci_fazy, lista_wyskalowanych_czasow_z_dana_liczba_wezlow, color=mapa_kolorow[indeks], label=str(liczba_wezlow))
+        plt.legend(title="Liczba wezlow")
+        plt.xlabel("Wartosc poziomu jednorodnosci", fontsize=8)
+        plt.ylabel("Stosunek czasu odpowiedzi do maksymalnego czasu odpowiedzi dla danej wartosci parametru", fontsize=8)
+        ax = plt.gca()
+        ax.set_ylim([-0.05, 1.05])
+
+
+        index_wartosc_parametru += 1
+
+    plt.savefig("Porownanie poziomu jednorodnosci (%s, %s).png" % (program_szeregujacy, parametr), dpi=300)
 
 
 def main():
@@ -188,6 +314,13 @@ def main():
     # rysuj_wykresy_porownania_liczby_wezlow("jsq", "obc")
     # rysuj_wykresy_porownania_liczby_wezlow("jsq", "rozm")
     rysuj_wykresy_porownania_liczby_wezlow("jsq", "przedk")
+
+    # rysuj_wykresy_porownania_poziomu_jednorodnosci("jnq", "obc")
+    # rysuj_wykresy_porownania_poziomu_jednorodnosci("jnq", "rozm")
+    # rysuj_wykresy_porownania_poziomu_jednorodnosci("jnq", "przedk")
+    # rysuj_wykresy_porownania_poziomu_jednorodnosci("jsq", "obc")
+    # rysuj_wykresy_porownania_poziomu_jednorodnosci("jsq", "rozm")
+    # rysuj_wykresy_porownania_poziomu_jednorodnosci("jsq", "przedk")
 
 
 if __name__ == "__main__":
